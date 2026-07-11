@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { UsuarioService } from '../../services/usuario.service';
+import { toast } from 'ngx-sonner';
 
 @Component({
   selector: 'app-login',
@@ -103,12 +104,13 @@ export class LoginComponent {
           nome: resposta.nome,
           email: resposta.email,
         });
+        toast.success('Login realizado com sucesso!');
         this.router.navigate(['/']);
       } else {
-        alert(resposta.mensagem || 'Erro ao entrar');
+        toast.error(resposta.mensagem || 'Erro ao entrar');
       }
     } catch (error: any) {
-      alert(error.message || 'Erro ao entrar');
+      toast.error(error.message || 'Erro ao entrar');
     }
   }
 }

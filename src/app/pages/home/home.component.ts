@@ -1,4 +1,12 @@
-import { Component, ElementRef, HostListener, OnDestroy, ViewChild, afterNextRender, ChangeDetectorRef } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  HostListener,
+  OnDestroy,
+  ViewChild,
+  afterNextRender,
+  ChangeDetectorRef,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HeaderComponent, NavLink } from '../../shared/components/header/header.component';
@@ -14,54 +22,119 @@ import { renderStars, getStatusColorLotacao, getCapacityFromStatus } from '../..
     <div class="w-full min-h-screen pt-16">
       <app-header [navLinks]="navLinks" />
 
-      <div class="w-full py-14 bg-gradient-to-r from-[#004E4C] to-verdeClaro" style="boxShadow: 5px 5px 4px rgba(0, 0, 0, 0.25)">
+      <div
+        class="w-full py-14 bg-gradient-to-r from-[#004E4C] to-verdeClaro"
+        style="boxShadow: 5px 5px 4px rgba(0, 0, 0, 0.25)"
+      >
         <div class="relative w-full mx-auto">
           <div class="overflow-hidden">
-            <div #carouselTrack class="flex -ml-20" [style.transform]="carouselTransform" [style.transition]="disableAnimation ? 'none' : 'transform 500ms ease-in-out'">
+            <div
+              #carouselTrack
+              class="flex -ml-20"
+              [style.transform]="carouselTransform"
+              [style.transition]="disableAnimation ? 'none' : 'transform 500ms ease-in-out'"
+            >
               @for (slide of displayedSlides; track $index) {
                 @if (slide.layout === 'hero') {
                   <div class="pb-4 min-w-0 shrink-0 grow-0 pl-20 basis-auto">
-                    <div class="p-6 bg-white rounded-2xl shadow-sm w-[700px] h-[200px] flex flex-col justify-between relative" style="box-shadow: 5px 5px 4px rgba(0, 0, 0, 0.25)">
+                    <div
+                      class="p-6 bg-white rounded-2xl shadow-sm w-[700px] h-[200px] flex flex-col justify-between relative"
+                      style="box-shadow: 5px 5px 4px rgba(0, 0, 0, 0.25)"
+                    >
                       <div class="flex flex-row items-center justify-between">
                         <div class="flex flex-col w-3/5">
-                          <h1 class="text-3xl font-semibold text-gray-800 mb-2">{{ slide.titulo }}</h1>
+                          <h1 class="text-3xl font-semibold text-gray-800 mb-2">
+                            {{ slide.titulo }}
+                          </h1>
                           <p class="text-xl text-gray-600 mb-4">{{ slide.descricao }}</p>
                         </div>
                       </div>
-                      <button class="bg-[#106A43] hover:bg-[#0c5033] text-white text-lg rounded-lg w-4/12 py-2 absolute bottom-10 right-10" (click)="slide.acao()">{{ slide.botao }}</button>
+                      <button
+                        class="bg-[#106A43] hover:bg-[#0c5033] text-white text-lg rounded-lg w-4/12 py-2 absolute bottom-10 right-10"
+                        (click)="slide.acao()"
+                      >
+                        {{ slide.botao }}
+                      </button>
                     </div>
                   </div>
                 } @else if (slide.layout === 'ods') {
                   <div class="pb-4 min-w-0 shrink-0 grow-0 pl-20 basis-auto overflow-visible">
-                    <div class="p-10 bg-[#106A43] rounded-2xl shadow-sm text-white w-[700px] h-[200px] flex flex-row justify-between items-center overflow-visible" style="box-shadow: 5px 5px 4px rgba(0, 0, 0, 0.25)">
+                    <div
+                      class="p-10 bg-[#106A43] rounded-2xl shadow-sm text-white w-[700px] h-[200px] flex flex-row justify-between items-center overflow-visible"
+                      style="box-shadow: 5px 5px 4px rgba(0, 0, 0, 0.25)"
+                    >
                       <div class="flex flex-col w-3/5">
                         <h1 class="text-3xl font-semibold mb-2">{{ slide.titulo }}</h1>
                         <p class="text-xl mb-4">{{ slide.descricao }}</p>
                       </div>
                       <div class="flex justify-end w-1/2">
-                        <img [src]="slide.imagem" alt="ODS 3" class="w-auto h-[150px] object-contain" />
+                        <img
+                          [src]="slide.imagem"
+                          alt="ODS 3"
+                          class="w-auto h-[150px] object-contain"
+                        />
                       </div>
                     </div>
                   </div>
                 } @else {
                   <div class="pb-4 min-w-0 shrink-0 grow-0 pl-20 basis-auto">
-                    <div class="p-6 bg-white rounded-2xl shadow-sm w-[700px] h-[200px] flex flex-col justify-between" style="box-shadow: 5px 5px 4px rgba(0, 0, 0, 0.25)">
+                    <div
+                      class="p-6 bg-white rounded-2xl shadow-sm w-[700px] h-[200px] flex flex-col justify-between"
+                      style="box-shadow: 5px 5px 4px rgba(0, 0, 0, 0.25)"
+                    >
                       <div>
-                        <h1 class="text-2xl font-semibold text-gray-800 mb-2">{{ slide.titulo }}</h1>
+                        <h1 class="text-2xl font-semibold text-gray-800 mb-2">
+                          {{ slide.titulo }}
+                        </h1>
                         <p class="text-base text-gray-600 mb-4">{{ slide.descricao }}</p>
                       </div>
-                      <button class="bg-[#106A43] hover:bg-[#0c5033] text-white text-lg rounded-lg w-4/12 py-2" (click)="slide.acao()">{{ slide.botao }}</button>
+                      <button
+                        class="bg-[#106A43] hover:bg-[#0c5033] text-white text-lg rounded-lg w-4/12 py-2"
+                        (click)="slide.acao()"
+                      >
+                        {{ slide.botao }}
+                      </button>
                     </div>
                   </div>
                 }
               }
             </div>
           </div>
-          <button class="absolute size-8 rounded-full top-1/2 left-4 -translate-y-1/2 border bg-white hover:bg-gray-100 flex items-center justify-center shadow-xs" (click)="slideAnterior()">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+          <button
+            class="absolute size-8 rounded-full top-1/2 left-4 -translate-y-1/2 border bg-white hover:bg-gray-100 flex items-center justify-center shadow-xs"
+            (click)="slideAnterior()"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="m15 18-6-6 6-6" />
+            </svg>
           </button>
-          <button class="absolute size-8 rounded-full top-1/2 right-4 -translate-y-1/2 border bg-white hover:bg-gray-100 flex items-center justify-center shadow-xs" (click)="proximoSlide()">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+          <button
+            class="absolute size-8 rounded-full top-1/2 right-4 -translate-y-1/2 border bg-white hover:bg-gray-100 flex items-center justify-center shadow-xs"
+            (click)="proximoSlide()"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="m9 18 6-6-6-6" />
+            </svg>
           </button>
         </div>
       </div>
@@ -81,7 +154,9 @@ import { renderStars, getStatusColorLotacao, getCapacityFromStatus } from '../..
         >
           <h1>EMERGÊNCIAS E UPAS</h1>
         </div>
-        <div class="flex items-center w-full md:w-6/12 justify-center md:justify-end h-full px-4 md:px-0 pb-2 md:pb-0">
+        <div
+          class="flex items-center w-full md:w-6/12 justify-center md:justify-end h-full px-4 md:px-0 pb-2 md:pb-0"
+        >
           <input
             type="text"
             placeholder="Pesquisar por nome da unidade de saúde..."
@@ -96,80 +171,176 @@ import { renderStars, getStatusColorLotacao, getCapacityFromStatus } from '../..
             [class.h-9]="isSearchBarSticky"
             [class.h-12]="!isSearchBarSticky"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <circle cx="11" cy="11" r="8" />
+              <path d="m21 21-4.3-4.3" />
+            </svg>
           </button>
         </div>
       </div>
 
       <div class="flex items-center ml-4 md:ml-20 mt-6 md:mt-10 gap-x-2">
         <span class="text-verdeEscuro text-xl md:text-2xl font-bold">Ordenar por</span>
-        <select [(ngModel)]="ordenarPor" (ngModelChange)="aplicarOrdenacao()" class="ml-2 bg-white text-verdeEscuro border border-verdeClaro rounded-lg p-2 text-sm">
+        <select
+          [(ngModel)]="ordenarPor"
+          (ngModelChange)="aplicarOrdenacao()"
+          class="ml-2 bg-white text-verdeEscuro border border-verdeClaro rounded-lg p-2 text-sm"
+        >
           <option value="lotacao">Lotação</option>
           <option value="localizacao">Localização</option>
           <option value="status">Avaliação</option>
         </select>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-3 pl-10 pr-10 place-items-center justify-center mt-8">
+      <div
+        class="grid grid-cols-1 md:grid-cols-3 pl-10 pr-10 place-items-center justify-center mt-8"
+      >
         @for (card of unidadesFiltradas; track card.id) {
-          <div class="flex flex-col relative bg-verdePastel w-11/12 pt-4 gap-6 mx-4 rounded-lg mb-6 shadow-[5px_5px_4px_rgba(0,0,0,0.25)]">
+          <div
+            class="flex flex-col relative bg-verdePastel w-11/12 pt-4 gap-6 mx-4 rounded-lg mb-6 shadow-[5px_5px_4px_rgba(0,0,0,0.25)]"
+          >
             @if (!notificado) {
-            <svg
-              xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-              class="absolute top-2 right-9 cursor-pointer"
-              (click)="notificar(card)"
-            >
-              <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>
-            </svg>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                class="absolute top-2 right-9 cursor-pointer"
+                (click)="notificar(card)"
+              >
+                <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
+                <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
+              </svg>
             } @else {
-            <svg
-              xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2"
-              class="absolute top-2 right-9 cursor-pointer"
-              (click)="notificar(card)"
-            >
-              <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>
-            </svg>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                stroke="currentColor"
+                stroke-width="2"
+                class="absolute top-2 right-9 cursor-pointer"
+                (click)="notificar(card)"
+              >
+                <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
+                <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
+              </svg>
             }
             <svg
-              xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              xmlns="http://www.w3.org/2000/svg"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
               class="absolute top-2 right-2 cursor-pointer"
               (click)="irParaDetalhes(card.id)"
             >
-              <polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/>
+              <polyline points="15 3 21 3 21 9" />
+              <polyline points="9 21 3 21 3 15" />
+              <line x1="21" y1="3" x2="14" y2="10" />
+              <line x1="3" y1="21" x2="10" y2="14" />
             </svg>
 
             <div class="flex flex-row flex-grow px-6">
               <div class="flex flex-row items-center w-full justify-center min-h-[200px]">
-                <img [src]="card.imagemURL" [alt]="card.nome" class="w-[300px] h-auto object-contain" />
+                <img
+                  [src]="card.imagemURL"
+                  [alt]="card.nome"
+                  class="w-[300px] h-auto object-contain"
+                />
               </div>
-              <div class="flex flex-col text-verdeEscuro w-11/12 justify-center text-justify pl-4 gap-y-1">
+              <div
+                class="flex flex-col text-verdeEscuro w-11/12 justify-center text-justify pl-4 gap-y-1"
+              >
                 <h1 class="text-base text-left font-bold">{{ card.nome }}</h1>
                 <div class="flex items-center">
                   @for (star of getEstrelas(card.nota); track $index) {
                     @if (star === 'filled') {
-                      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="black"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="black"
+                      >
+                        <polygon
+                          points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"
+                        />
+                      </svg>
                     } @else if (star === 'half') {
-                      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                      >
                         <defs>
                           <clipPath [attr.id]="'halfStarHome' + $index">
-                            <rect x="0" y="0" width="12" height="24"/>
+                            <rect x="0" y="0" width="12" height="24" />
                           </clipPath>
                         </defs>
-                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="none" stroke="black" stroke-width="2"/>
-                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="black" [attr.clip-path]="'url(#halfStarHome' + $index + ')'"/>
+                        <polygon
+                          points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"
+                          fill="none"
+                          stroke="black"
+                          stroke-width="2"
+                        />
+                        <polygon
+                          points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"
+                          fill="black"
+                          [attr.clip-path]="'url(#halfStarHome' + $index + ')'"
+                        />
                       </svg>
                     } @else {
-                      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="black"
+                        stroke-width="2"
+                      >
+                        <polygon
+                          points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"
+                        />
+                      </svg>
                     }
                   }
                 </div>
-                <p class="text-xs"><span class="font-bold">Endereço:</span> {{ card.endereco.bairro.nome }} - {{ card.endereco.rua }}</p>
+                <p class="text-xs">
+                  <span class="font-bold">Endereço:</span> {{ card.endereco.bairro.nome }} -
+                  {{ card.endereco.rua }}
+                </p>
                 <p class="text-xs"><span class="font-bold">Telefone:</span> {{ card.telefone }}</p>
                 <p class="font-bold text-sm">Status: {{ card.status.split('_').join(' ') }}</p>
                 <div class="flex items-center">
                   @for (icon of getUserIcons(card.status); track $index) {
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" [attr.fill]="icon.preenchido ? icon.cor : 'none'" [attr.stroke]="icon.preenchido ? icon.cor : '#999999'" stroke-width="2">
-                      <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      [attr.fill]="icon.preenchido ? icon.cor : 'none'"
+                      [attr.stroke]="icon.preenchido ? icon.cor : '#999999'"
+                      stroke-width="2"
+                    >
+                      <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+                      <circle cx="12" cy="7" r="4" />
                     </svg>
                   }
                 </div>
@@ -204,10 +375,38 @@ export class HomeComponent implements OnDestroy {
   ];
 
   slides = [
-    { titulo: 'Atualize o status da sua unidade de saúde', descricao: 'Ajude outros usuários informando a situação atual das emergências.', botao: 'REGISTRAR LOTAÇÃO', acao: () => this.scrollParaBusca(), imagem: null, layout: 'hero' },
-    { titulo: 'Seu impacto conta', descricao: 'Veja como suas contribuições ajudam a comunidade a se manter informada.', botao: 'VER MEUS PONTOS', acao: () => this.router.navigate(['/ranking']), imagem: null, layout: 'default' },
-    { titulo: 'Objetivo 3: Saúde e Bem-Estar', descricao: 'Contribuindo para os Objetivos de Desenvolvimento Sustentável.', botao: 'SAIBA MAIS', acao: () => {}, imagem: '/images/ods3.png', layout: 'ods' },
-    { titulo: 'Descubra unidades próximas', descricao: 'Utilize o mapa para encontrar os hospitais e clínicas mais próximos de você.', botao: 'IR PARA O MAPA', acao: () => this.router.navigate(['/mapa']), imagem: null, layout: 'default' },
+    {
+      titulo: 'Atualize o status da sua unidade de saúde',
+      descricao: 'Ajude outros usuários informando a situação atual das emergências.',
+      botao: 'REGISTRAR LOTAÇÃO',
+      acao: () => this.scrollParaBusca(),
+      imagem: null,
+      layout: 'hero',
+    },
+    {
+      titulo: 'Seu impacto conta',
+      descricao: 'Veja como suas contribuições ajudam a comunidade a se manter informada.',
+      botao: 'VER MEUS PONTOS',
+      acao: () => this.router.navigate(['/ranking']),
+      imagem: null,
+      layout: 'default',
+    },
+    {
+      titulo: 'Objetivo 3: Saúde e Bem-Estar',
+      descricao: 'Contribuindo para os Objetivos de Desenvolvimento Sustentável.',
+      botao: 'SAIBA MAIS',
+      acao: () => {},
+      imagem: '/images/ods3.png',
+      layout: 'ods',
+    },
+    {
+      titulo: 'Descubra unidades próximas',
+      descricao: 'Utilize o mapa para encontrar os hospitais e clínicas mais próximos de você.',
+      botao: 'IR PARA O MAPA',
+      acao: () => this.router.navigate(['/mapa']),
+      imagem: null,
+      layout: 'default',
+    },
   ];
 
   get displayedSlides() {
@@ -237,26 +436,29 @@ export class HomeComponent implements OnDestroy {
   userLng: number | null = null;
 
   private statusOrder: Record<string, number> = {
-    'VAZIO': 1,
-    'POUCO_VAZIO': 2,
-    'MODERADO': 3,
-    'CHEIO': 4,
-    'MUITO_CHEIO': 5,
+    VAZIO: 1,
+    POUCO_VAZIO: 2,
+    MODERADO: 3,
+    CHEIO: 4,
+    MUITO_CHEIO: 5,
   };
 
   private calcularDistancia(lat1: number, lng1: number, lat2: number, lng2: number): number {
     const R = 6371;
-    const dLat = (lat2 - lat1) * Math.PI / 180;
-    const dLng = (lng2 - lng1) * Math.PI / 180;
-    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-              Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-              Math.sin(dLng / 2) * Math.sin(dLng / 2);
+    const dLat = ((lat2 - lat1) * Math.PI) / 180;
+    const dLng = ((lng2 - lng1) * Math.PI) / 180;
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos((lat1 * Math.PI) / 180) *
+        Math.cos((lat2 * Math.PI) / 180) *
+        Math.sin(dLng / 2) *
+        Math.sin(dLng / 2);
     return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   }
 
   get unidadesFiltradas(): UnidadeSaudeDTO[] {
-    let lista = this.unidades.filter(card =>
-      card.nome.toLowerCase().includes(this.searchTerm.toLowerCase())
+    let lista = this.unidades.filter(
+      (card) => card.nome && card.nome.toLowerCase().includes(this.searchTerm.toLowerCase()),
     );
 
     switch (this.ordenarPor) {
@@ -268,8 +470,10 @@ export class HomeComponent implements OnDestroy {
           lista.sort((a, b) => {
             if (a.lat == null || a.lng == null) return 1;
             if (b.lat == null || b.lng == null) return -1;
-            return this.calcularDistancia(this.userLat!, this.userLng!, a.lat, a.lng) -
-                   this.calcularDistancia(this.userLat!, this.userLng!, b.lat, b.lng);
+            return (
+              this.calcularDistancia(this.userLat!, this.userLng!, a.lat, a.lng) -
+              this.calcularDistancia(this.userLat!, this.userLng!, b.lat, b.lng)
+            );
           });
         }
         break;
@@ -349,7 +553,7 @@ export class HomeComponent implements OnDestroy {
         },
         () => {
           console.warn('Localização não disponível. Ordenação por localização desativada.');
-        }
+        },
       );
     }
   }

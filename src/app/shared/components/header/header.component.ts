@@ -1,7 +1,7 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges, OnDestroy } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { AsyncPipe } from '@angular/common';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { UsuarioService } from '../../../services/usuario.service';
 
 export interface NavLink {
@@ -23,7 +23,7 @@ export interface NavLink {
           <a routerLink="/" class="text-2xl font-bold text-white">UpaAgora</a>
         </div>
         <nav class="hidden md:flex items-center space-x-8 text-xl">
-          @for (link of navLinks; track link.id) {
+          @for (link of visibleNavLinks; track link.id) {
             <a
               [routerLink]="link.href"
               class="text-white hover:text-gray-300 transition-colors"
@@ -53,7 +53,7 @@ export interface NavLink {
       </div>
       @if (menuAberto) {
         <div class="md:hidden bg-gradient-to-r from-[#004E4C] to-verdeClaro px-4 pb-4">
-          @for (link of navLinks; track link.id) {
+          @for (link of visibleNavLinks; track link.id) {
             <a
               [routerLink]="link.href"
               class="block text-white py-2 hover:text-gray-300"
@@ -83,17 +83,38 @@ export interface NavLink {
     </header>
   `,
 })
-export class HeaderComponent {
+export class HeaderComponent implements OnChanges, OnDestroy {
   @Input() navLinks: NavLink[] = [];
   menuAberto = false;
 
   isLoggedIn$!: Observable<boolean>;
+  visibleNavLinks: NavLink[] = [];
+  private sub?: Subscription;
 
   constructor(
     private usuarioService: UsuarioService,
     private router: Router
   ) {
     this.isLoggedIn$ = this.usuarioService.isLoggedIn$;
+    this.sub = this.isLoggedIn$.subscribe(() => this.updateVisibleLinks());
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['navLinks']) {
+      this.updateVisibleLinks();
+    }
+  }
+
+  ngOnDestroy() {
+    this.sub?.unsubscribe();
+  }
+
+  private updateVisibleLinks() {
+    const logged = this.usuarioService.usuarioAtual?.usuarioId;
+    this.visibleNavLinks = this.navLinks.filter(link => {
+      if (link.label === 'Configurações' && !logged) return false;
+      return true;
+    });
   }
 
   logout() {

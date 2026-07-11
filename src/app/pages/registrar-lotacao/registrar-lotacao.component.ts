@@ -4,6 +4,7 @@ import { HeaderComponent, NavLink } from '../../shared/components/header/header.
 import { BarraTituloComponent } from '../../shared/components/barra-titulo/barra-titulo.component';
 import { UnidadeService } from '../../services/unidade.service';
 import { UsuarioService } from '../../services/usuario.service';
+import { toast } from 'ngx-sonner';
 import { UnidadePaginaDTO } from '../../models/unidade-pagina-dto';
 import { getStatusColor, getStatusArray } from '../../utils/rendering';
 
@@ -13,7 +14,7 @@ import { getStatusColor, getStatusArray } from '../../utils/rendering';
   template: `
     <div class="flex flex-col w-full h-full bg-gray-100 min-h-screen">
       <app-header [navLinks]="navLinks" />
-      <app-barra-titulo titulo="REGISTRAR LOTAÇÃO" />
+      <app-barra-titulo titulo="REGISTRAR LOTAÇÃO" [mostrarVoltar]="true" (voltar)="cancelar()" />
 
       @if (!unidade) {
         <div class="w-full min-h-screen flex flex-col items-center justify-center p-8">
@@ -281,6 +282,12 @@ export class RegistrarLotacaoComponent implements OnInit {
 
   ngOnInit() {
     if (typeof window !== 'undefined') window.scrollTo(0, 0);
+    const usuario = this.usuarioService.usuarioAtual;
+    if (!usuario?.usuarioId) {
+      toast.error('Você precisa estar logado para registrar lotação.');
+      this.router.navigate(['/']);
+      return;
+    }
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       this.carregarUnidade(parseInt(id));
@@ -313,13 +320,13 @@ export class RegistrarLotacaoComponent implements OnInit {
   async enviarAtualizacao() {
     const id = this.route.snapshot.paramMap.get('id');
     if (!id) {
-      alert('ID da unidade inválido');
+      toast.error('ID da unidade inválido');
       return;
     }
 
     const idNum = parseInt(id);
     if (isNaN(idNum)) {
-      alert('ID da unidade inválido');
+      toast.error('ID da unidade inválido');
       return;
     }
 
@@ -335,10 +342,10 @@ export class RegistrarLotacaoComponent implements OnInit {
           ? { ...this.unidade, status: resposta.statusUnidadeAtualizado }
           : null;
       }
-      alert('Atualização enviada com sucesso!');
+      toast.success('Atualização enviada com sucesso!');
     } catch (error) {
       console.error('Erro ao enviar atualização:', error);
-      alert('Erro ao enviar atualização.');
+      toast.error('Erro ao enviar atualização.');
     }
   }
 

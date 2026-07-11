@@ -66,4 +66,14 @@ export class UnidadeService {
     if (!response.ok) throw new Error('Erro ao adicionar comentário');
     return response.text();
   }
+
+  async avaliar(unidadeId: number, clienteId: number, nota: number): Promise<any> {
+    const response = await fetch(`${this.baseUrl}/unidade/${unidadeId}/avaliacao`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ clienteId, nota }),
+    });
+    if (!response.ok) throw new Error('Erro ao avaliar');
+    return response.text();
+  }
 }

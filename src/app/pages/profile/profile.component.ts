@@ -2,6 +2,7 @@ import { Component, ElementRef, ViewChild, afterNextRender, ChangeDetectorRef } 
 import { FormsModule } from '@angular/forms';
 import { HeaderComponent, NavLink } from '../../shared/components/header/header.component';
 import { UsuarioService } from '../../services/usuario.service';
+import { toast } from 'ngx-sonner';
 import { environment } from '../../../environments/environment';
 
 @Component({
@@ -281,8 +282,10 @@ export class ProfileComponent {
 
       try {
         await this.usuarioService.atualizarFoto(this.fotoUrl);
+        toast.success('Foto atualizada com sucesso!');
       } catch (error) {
         console.error('Erro ao salvar foto:', error);
+        toast.error('Erro ao salvar foto.');
       }
     };
     reader.readAsDataURL(file);
@@ -298,13 +301,13 @@ export class ProfileComponent {
       if (response.ok) {
         const usuario = this.usuarioService.usuarioAtual;
         this.usuarioService.setUsuarioAtual({ ...usuario, nome: this.nome, email: this.email });
-        alert('Informações pessoais salvas com sucesso!');
+        toast.success('Informações pessoais salvas com sucesso!');
       } else {
-        alert('Erro ao salvar informações pessoais.');
+        toast.error('Erro ao salvar informações pessoais.');
       }
     } catch (error) {
       console.error('Erro ao salvar informações pessoais:', error);
-      alert('Erro ao salvar informações pessoais.');
+      toast.error('Erro ao salvar informações pessoais.');
     }
   }
 
@@ -316,23 +319,23 @@ export class ProfileComponent {
         body: JSON.stringify({ telefone: this.telefone, endereco: this.rua }),
       });
       if (response.ok) {
-        alert('Informações complementares salvas com sucesso!');
+        toast.success('Informações complementares salvas com sucesso!');
       } else {
-        alert('Erro ao salvar informações complementares.');
+        toast.error('Erro ao salvar informações complementares.');
       }
     } catch (error) {
       console.error('Erro ao salvar informações complementares:', error);
-      alert('Erro ao salvar informações complementares.');
+      toast.error('Erro ao salvar informações complementares.');
     }
   }
 
   async salvarSenha() {
     if (!this.senhaAtual || !this.novaSenha) {
-      alert('Preencha a senha atual e a nova senha.');
+      toast.error('Preencha a senha atual e a nova senha.');
       return;
     }
     if (this.novaSenha !== this.senhaConfirmar) {
-      alert('A nova senha e a confirmação não coincidem.');
+      toast.error('A nova senha e a confirmação não coincidem.');
       return;
     }
     try {
@@ -343,16 +346,16 @@ export class ProfileComponent {
       });
       const data = await response.json();
       if (response.ok) {
-        alert('Senha atualizada com sucesso!');
+        toast.success('Senha atualizada com sucesso!');
         this.senhaAtual = '';
         this.novaSenha = '';
         this.senhaConfirmar = '';
       } else {
-        alert(data.mensagem || 'Erro ao atualizar senha.');
+        toast.error(data.mensagem || 'Erro ao atualizar senha.');
       }
     } catch (error) {
       console.error('Erro ao atualizar senha:', error);
-      alert('Erro ao atualizar senha.');
+      toast.error('Erro ao atualizar senha.');
     }
   }
 }
