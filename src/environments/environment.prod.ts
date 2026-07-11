@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://upa-agora-api.onrender.com'
+  apiUrl: 'https://upa-agora.onrender.com'
 };

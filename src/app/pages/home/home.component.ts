@@ -13,7 +13,7 @@ import { HeaderComponent, NavLink } from '../../shared/components/header/header.
 import { UnidadeService } from '../../services/unidade.service';
 import { UsuarioService } from '../../services/usuario.service';
 import { UnidadeSaudeDTO } from '../../models/unidadesdto';
-import { renderStars, getStatusColorLotacao, getCapacityFromStatus } from '../../utils/rendering';
+import { renderStars, getStatusColorLotacao, getCapacityFromStatus, getLocalUbsImage } from '../../utils/rendering';
 
 @Component({
   selector: 'app-home',
@@ -89,7 +89,7 @@ import { renderStars, getStatusColorLotacao, getCapacityFromStatus } from '../..
                         <p class="text-base text-gray-600 mb-4">{{ slide.descricao }}</p>
                       </div>
                       <button
-                        class="bg-[#106A43] hover:bg-[#0c5033] text-white text-lg rounded-lg w-4/12 py-2"
+                        class="bg-[#106A43] hover:bg-[#0c5033] text-white text-lg rounded-lg w-full py-2"
                         (click)="slide.acao()"
                       >
                         {{ slide.botao }}
@@ -258,7 +258,7 @@ import { renderStars, getStatusColorLotacao, getCapacityFromStatus } from '../..
             <div class="flex flex-row flex-grow px-6">
               <div class="flex flex-row items-center w-full justify-center min-h-[200px]">
                 <img
-                  [src]="card.imagemURL"
+                  [src]="getLocalUbsImage(card.id)"
                   [alt]="card.nome"
                   class="w-[300px] h-auto object-contain"
                 />
@@ -409,20 +409,17 @@ export class HomeComponent implements OnDestroy {
     },
   ];
 
-  get displayedSlides() {
-    const first = this.slides[0];
-    const last = this.slides[this.slides.length - 1];
-    return [last, ...this.slides, first];
-  }
+  private _displayedSlides = [this.slides[this.slides.length - 1], ...this.slides, this.slides[0]];
+  get displayedSlides() { return this._displayedSlides; }
 
-  private _slideAtual = 1;
+  private _currentIndex = 1;
   disableAnimation = false;
-  private _wrapPending = false;
+  private _transitioning = false;
+  private _vw = 1200;
   private autoPlayInterval: any;
 
   get carouselTransform(): string {
-    const vw = typeof document !== 'undefined' ? document.documentElement.clientWidth : 1200;
-    const offset = (vw - 700) / 2 - this._slideAtual * 780;
+    const offset = (this._vw - 700) / 2 - this._currentIndex * 780;
     return `translateX(${offset}px)`;
   }
 
@@ -492,23 +489,36 @@ export class HomeComponent implements OnDestroy {
     private cdr: ChangeDetectorRef,
   ) {
     afterNextRender(() => {
+      this._vw = document.documentElement.clientWidth;
       this.carregarUnidades();
       this.iniciarAutoPlay();
       this.obterLocalizacao();
 
+      window.addEventListener('resize', () => {
+        this._vw = document.documentElement.clientWidth;
+      });
+
       this.carouselTrack.nativeElement.addEventListener('transitionend', () => {
-        if (!this._wrapPending) return;
-        this._wrapPending = false;
-        this.disableAnimation = true;
-        if (this._slideAtual >= this.displayedSlides.length - 1) {
-          this._slideAtual = 1;
-        } else if (this._slideAtual <= 0) {
-          this._slideAtual = this.displayedSlides.length - 2;
+        if (!this._transitioning) return;
+        if (this._currentIndex >= this.displayedSlides.length - 1) {
+          this.disableAnimation = true;
+          this._currentIndex = 1;
+          this.cdr.detectChanges();
+          requestAnimationFrame(() => {
+            this.disableAnimation = false;
+            this._transitioning = false;
+          });
+        } else if (this._currentIndex <= 0) {
+          this.disableAnimation = true;
+          this._currentIndex = this.displayedSlides.length - 2;
+          this.cdr.detectChanges();
+          requestAnimationFrame(() => {
+            this.disableAnimation = false;
+            this._transitioning = false;
+          });
+        } else {
+          this._transitioning = false;
         }
-        this.cdr.detectChanges();
-        requestAnimationFrame(() => {
-          this.disableAnimation = false;
-        });
       });
     });
   }
@@ -576,18 +586,16 @@ export class HomeComponent implements OnDestroy {
   }
 
   proximoSlide() {
-    this._slideAtual++;
-    if (this._slideAtual >= this.displayedSlides.length - 1) {
-      this._wrapPending = true;
-    }
+    if (this._transitioning) return;
+    this._transitioning = true;
+    this._currentIndex++;
     this.reiniciarAutoPlay();
   }
 
   slideAnterior() {
-    this._slideAtual--;
-    if (this._slideAtual <= 0) {
-      this._wrapPending = true;
-    }
+    if (this._transitioning) return;
+    this._transitioning = true;
+    this._currentIndex--;
     this.reiniciarAutoPlay();
   }
 
@@ -611,6 +619,10 @@ export class HomeComponent implements OnDestroy {
 
   getEstrelas(nota: number): string[] {
     return renderStars(nota);
+  }
+
+  getLocalUbsImage(id: number): string {
+    return getLocalUbsImage(id);
   }
 
   getUserIcons(status: string): { preenchido: boolean; cor: string }[] {

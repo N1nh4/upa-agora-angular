@@ -54,3 +54,8 @@ export function getStatusColor(index: number): string {
   if (index === 2) return '#fe9a2e';
   return '#fb2c36';
 }
+
+export function getLocalUbsImage(id: number): string {
+  const index = ((id - 1) % 6) + 1;
+  return `/ubs/ubs${index}.png`;
+}

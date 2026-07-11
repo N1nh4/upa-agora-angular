@@ -6,7 +6,7 @@ import { UnidadeService } from '../../services/unidade.service';
 import { UsuarioService } from '../../services/usuario.service';
 import { toast } from 'ngx-sonner';
 import { UnidadePaginaDTO } from '../../models/unidade-pagina-dto';
-import { getStatusColorLotacao, getCapacityFromStatus } from '../../utils/rendering';
+import { getStatusColorLotacao, getCapacityFromStatus, getLocalUbsImage } from '../../utils/rendering';
 
 @Component({
   selector: 'app-unidade-detail',
@@ -26,7 +26,7 @@ import { getStatusColorLotacao, getCapacityFromStatus } from '../../utils/render
           <div class="flex">
             <div class="flex w-2/5 mr-8">
               <img
-                [src]="unidade.imagemURL"
+                [src]="getLocalUbsImage(unidade.id)"
                 [alt]="unidade.nome"
                 class="w-[400px] h-[300px] object-cover rounded-lg shadow-lg"
               />
@@ -369,6 +369,10 @@ export class UnidadeDetailComponent implements OnInit {
 
   cancelarComentario() {
     this.novoComentarioTexto = '';
+  }
+
+  getLocalUbsImage(id: number): string {
+    return getLocalUbsImage(id);
   }
 
   getUserIcons(status: string): { preenchido: boolean; cor: string }[] {

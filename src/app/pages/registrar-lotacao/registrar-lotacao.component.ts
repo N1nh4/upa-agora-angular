@@ -6,7 +6,7 @@ import { UnidadeService } from '../../services/unidade.service';
 import { UsuarioService } from '../../services/usuario.service';
 import { toast } from 'ngx-sonner';
 import { UnidadePaginaDTO } from '../../models/unidade-pagina-dto';
-import { getStatusColor, getStatusArray } from '../../utils/rendering';
+import { getStatusColor, getStatusArray, getLocalUbsImage } from '../../utils/rendering';
 
 @Component({
   selector: 'app-registrar-lotacao',
@@ -26,7 +26,7 @@ import { getStatusColor, getStatusArray } from '../../utils/rendering';
           <div class="flex flex-col lg:flex-row justify-between h-full">
             <div class="flex h-full items-center justify-center">
               <img
-                [src]="unidade.imagemURL"
+                [src]="getLocalUbsImage(unidade.id)"
                 alt="Imagem da unidade"
                 class="w-full h-full object-cover max-h-96"
               />
@@ -351,5 +351,9 @@ export class RegistrarLotacaoComponent implements OnInit {
 
   cancelar() {
     this.router.navigate(['/']);
+  }
+
+  getLocalUbsImage(id: number): string {
+    return getLocalUbsImage(id);
   }
 }

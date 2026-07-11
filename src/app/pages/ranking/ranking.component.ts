@@ -12,7 +12,7 @@ import { environment } from '../../../environments/environment';
       <div class="fixed top-0 left-0 w-screen h-screen -z-10" style="background-color: #DAE5DD"></div>
       <app-header [navLinks]="navLinks" />
 
-      <div class="container mx-auto px-4 pt-6">
+      <div class="container mx-auto px-4 pt-20">
         <div class="bg-white rounded-lg shadow-md p-4 md:p-6 max-w-[90%] md:max-w-[56%] mx-auto mb-20 flex justify-center items-end relative mt-6 min-h-[300px]">
           @if (topRanked[0]) {
             <div class="absolute top-4" style="left: 50%; transform: translateX(-50%)">

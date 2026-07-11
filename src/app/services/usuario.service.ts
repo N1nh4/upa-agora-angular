@@ -109,4 +109,22 @@ export class UsuarioService {
     }
     return data;
   }
+
+  async loginWithGoogle(idToken: string): Promise<any> {
+    const response = await fetch(`${this.baseUrl}/auth/google`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ idToken }),
+    });
+
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.mensagem || 'Erro ao entrar com Google');
+
+    if (typeof window !== 'undefined' && window.localStorage) {
+      try {
+        localStorage.setItem('usuarioLogado', JSON.stringify(data));
+      } catch {}
+    }
+    return data;
+  }
 }

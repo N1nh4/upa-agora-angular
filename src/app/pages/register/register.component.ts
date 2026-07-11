@@ -1,13 +1,18 @@
-import { Component } from '@angular/core';
+import { Component, afterNextRender } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { UsuarioService } from '../../services/usuario.service';
+import { toast } from 'ngx-sonner';
+
+declare const google: any;
 
 @Component({
   selector: 'app-register',
   imports: [RouterLink],
   template: `
-    <div class="min-h-screen bg-gradient-to-br from-emerald-900 to-emerald-700 flex items-center justify-center p-4">
-      <div class="bg-white p-6 md:p-8 rounded-lg shadow-xl w-full max-w-md text-center">
+    <div class="relative min-h-screen overflow-hidden">
+      <div class="fixed top-0 left-0 w-screen h-screen bg-gradient-to-r from-verdeClaro to-verdeClaro -z-10" style="clipPath: polygon(0 0, 100% 0, 100% 30%, 0 80%)"></div>
+      <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="bg-white p-6 md:p-8 rounded-lg shadow-xl w-full max-w-md text-center">
         <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-8">Cadastre-se</h1>
 
         <div class="space-y-4">
@@ -55,9 +60,9 @@ import { UsuarioService } from '../../services/usuario.service';
             <div class="relative flex justify-center text-sm"><span class="px-2 bg-white text-gray-500">ou</span></div>
           </div>
 
-          <button class="w-full flex items-center justify-center border border-gray-300 py-3 px-4 rounded-lg hover:bg-gray-50 transition text-gray-700 font-medium cursor-pointer">
+          <button (click)="entrarComGoogle()" class="w-full flex items-center justify-center border border-gray-300 py-3 px-4 rounded-lg hover:bg-gray-50 transition text-gray-700 font-medium cursor-pointer">
             <svg class="w-6 h-6 mr-3" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
-            Entrar com o Google
+            Cadastrar com o Google
           </button>
 
           <p class="text-gray-600 mt-6 text-sm">
@@ -76,12 +81,58 @@ export class RegisterComponent {
 
   constructor(
     private usuarioService: UsuarioService,
-    private router: Router
-  ) {}
+    private router: Router,
+  ) {
+    afterNextRender(() => {
+      this.initGoogleSignIn();
+    });
+  }
+
+  private initGoogleSignIn() {
+    if (typeof google === 'undefined') {
+      setTimeout(() => this.initGoogleSignIn(), 200);
+      return;
+    }
+
+    google.accounts.id.initialize({
+      client_id: 'SEU_GOOGLE_CLIENT_ID.apps.googleusercontent.com',
+      callback: (response: any) => this.handleGoogleResponse(response),
+    });
+  }
+
+  handleGoogleResponse(response: any) {
+    this.usuarioService.loginWithGoogle(response.credential)
+      .then((resposta) => {
+        this.usuarioService.setUsuarioAtual({
+          usuarioId: resposta.usuarioId,
+          nome: resposta.nome,
+          email: resposta.email,
+          fotoURL: resposta.fotoURL,
+        });
+        toast.success('Cadastro com Google realizado com sucesso!');
+        this.router.navigate(['/']);
+      })
+      .catch((error) => {
+        toast.error(error.message || 'Erro ao cadastrar com Google');
+      });
+  }
+
+  entrarComGoogle() {
+    if (typeof google !== 'undefined') {
+      google.accounts.id.prompt();
+    } else {
+      toast.error('Google Identity Services não carregou. Tente novamente.');
+    }
+  }
 
   criarConta() {
     this.usuarioService.criarUsuario(this.nome, this.email, this.senha)
-      .then(() => this.router.navigate(['/entrar']))
-      .catch((erro) => console.error('Erro ao criar usuário:', erro));
+      .then(() => {
+        toast.success('Conta criada com sucesso!');
+        this.router.navigate(['/entrar']);
+      })
+      .catch((erro) => {
+        toast.error('Erro ao criar usuário');
+      });
   }
 }
