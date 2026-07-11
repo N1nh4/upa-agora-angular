@@ -43,9 +43,11 @@ export class MapaComponent {
 
   private async carregarDados() {
     try {
-      this.upas = await this.mapaService.getUnidadesMapa();
+      const data = await this.mapaService.getUnidadesMapa();
+      this.upas = Array.isArray(data) ? data : [];
     } catch (err) {
       console.error('Erro ao carregar mapa:', err);
+      this.upas = [];
     }
   }
 
