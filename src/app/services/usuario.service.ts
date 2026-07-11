@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, map } from 'rxjs';
 import { UsuarioLogado } from '../models/usuario';
 import { environment } from '../../environments/environment';
 
@@ -10,12 +10,70 @@ export class UsuarioService {
   private usuarioSubject = new BehaviorSubject<UsuarioLogado>({} as UsuarioLogado);
   usuario$ = this.usuarioSubject.asObservable();
 
+  isLoggedIn$ = this.usuario$.pipe(
+    map(u => !!u && !!u.usuarioId)
+  );
+
+  constructor() {
+    if (typeof window !== 'undefined' && window.localStorage) {
+      const salvo = localStorage.getItem('usuarioLogado');
+      if (salvo) {
+        try {
+          this.usuarioSubject.next(JSON.parse(salvo));
+        } catch {
+          localStorage.removeItem('usuarioLogado');
+        }
+      }
+    }
+  }
+
   get usuarioAtual(): UsuarioLogado {
     return this.usuarioSubject.value;
   }
 
   setUsuarioAtual(usuario: UsuarioLogado) {
+    if (typeof window !== 'undefined' && window.localStorage) {
+      try {
+        localStorage.setItem('usuarioLogado', JSON.stringify(usuario));
+      } catch {
+        // localStorage full — keep in-memory only
+      }
+    }
     this.usuarioSubject.next(usuario);
+  }
+
+  logout() {
+    if (typeof window !== 'undefined' && window.localStorage) {
+      localStorage.removeItem('usuarioLogado');
+    }
+    this.usuarioSubject.next({} as UsuarioLogado);
+  }
+
+  async atualizarFoto(fotoURL: string) {
+    const usuario = this.usuarioAtual;
+    if (!usuario?.usuarioId) return;
+
+    await fetch(`${this.baseUrl}/usuario/${usuario.usuarioId}/foto`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ fotoURL }),
+    });
+    this.setUsuarioAtual({ ...usuario, fotoURL });
+  }
+
+  async carregarFoto() {
+    const usuario = this.usuarioAtual;
+    if (!usuario?.usuarioId) return;
+
+    try {
+      const response = await fetch(`${this.baseUrl}/usuario/${usuario.usuarioId}`);
+      if (response.ok) {
+        const data = await response.json();
+        if (data.fotoURL) {
+          this.setUsuarioAtual({ ...usuario, fotoURL: data.fotoURL });
+        }
+      }
+    } catch {}
   }
 
   async criarUsuario(nome: string, email: string, senha: string): Promise<any> {
@@ -42,7 +100,13 @@ export class UsuarioService {
     const data = await response.json();
     if (!response.ok) throw new Error(data.message || 'Erro ao entrar');
 
-    localStorage.setItem('usuarioLogado', JSON.stringify(data));
+    if (typeof window !== 'undefined' && window.localStorage) {
+      try {
+        localStorage.setItem('usuarioLogado', JSON.stringify(data));
+      } catch {
+        // localStorage full — keep in-memory only
+      }
+    }
     return data;
   }
 }

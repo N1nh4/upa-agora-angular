@@ -12,4 +12,6 @@ export interface UnidadeSaudeDTO {
   imagemURL: string;
   ultimaAtualizacao: string;
   avalicao: Avaliacao;
+  lat: number | null;
+  lng: number | null;
 }

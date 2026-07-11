@@ -1,4 +1,5 @@
 import { Component, ElementRef, HostListener, OnDestroy, ViewChild, afterNextRender, ChangeDetectorRef } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HeaderComponent, NavLink } from '../../shared/components/header/header.component';
 import { UnidadeService } from '../../services/unidade.service';
@@ -8,7 +9,7 @@ import { renderStars, getStatusColorLotacao, getCapacityFromStatus } from '../..
 
 @Component({
   selector: 'app-home',
-  imports: [HeaderComponent],
+  imports: [HeaderComponent, FormsModule],
   template: `
     <div class="w-full min-h-screen pt-16">
       <app-header [navLinks]="navLinks" />
@@ -102,10 +103,10 @@ import { renderStars, getStatusColorLotacao, getCapacityFromStatus } from '../..
 
       <div class="flex items-center ml-4 md:ml-20 mt-6 md:mt-10 gap-x-2">
         <span class="text-verdeEscuro text-xl md:text-2xl font-bold">Ordenar por</span>
-        <select class="ml-2 bg-white text-verdeEscuro border border-verdeClaro rounded-lg p-2 text-sm">
+        <select [(ngModel)]="ordenarPor" (ngModelChange)="aplicarOrdenacao()" class="ml-2 bg-white text-verdeEscuro border border-verdeClaro rounded-lg p-2 text-sm">
           <option value="lotacao">Lotação</option>
           <option value="localizacao">Localização</option>
-          <option value="status">Status</option>
+          <option value="status">Avaliação</option>
         </select>
       </div>
 
@@ -198,15 +199,13 @@ export class HomeComponent implements OnDestroy {
     { id: 1, label: 'Registrar lotação', href: '/' },
     { id: 2, label: 'Ir para o mapa', href: '/mapa' },
     { id: 3, label: 'Ranking', href: '/ranking' },
-    { id: 4, label: 'Entrar', href: '/entrar' },
-    { id: 5, label: 'Criar conta', href: '/criar-conta' },
-    { id: 6, label: 'Sobre nós', href: '/sobre-nos' },
-    { id: 7, label: 'Configurações', href: '/perfil' },
+    { id: 4, label: 'Sobre nós', href: '/sobre-nos' },
+    { id: 5, label: 'Configurações', href: '/perfil' },
   ];
 
   slides = [
     { titulo: 'Atualize o status da sua unidade de saúde', descricao: 'Ajude outros usuários informando a situação atual das emergências.', botao: 'REGISTRAR LOTAÇÃO', acao: () => this.scrollParaBusca(), imagem: null, layout: 'hero' },
-    { titulo: 'Seu impacto conta', descricao: 'Veja como suas contribuições ajudam a comunidade a se manter informada.', botao: 'VER MEUS PONTOS', acao: () => {}, imagem: null, layout: 'default' },
+    { titulo: 'Seu impacto conta', descricao: 'Veja como suas contribuições ajudam a comunidade a se manter informada.', botao: 'VER MEUS PONTOS', acao: () => this.router.navigate(['/ranking']), imagem: null, layout: 'default' },
     { titulo: 'Objetivo 3: Saúde e Bem-Estar', descricao: 'Contribuindo para os Objetivos de Desenvolvimento Sustentável.', botao: 'SAIBA MAIS', acao: () => {}, imagem: '/images/ods3.png', layout: 'ods' },
     { titulo: 'Descubra unidades próximas', descricao: 'Utilize o mapa para encontrar os hospitais e clínicas mais próximos de você.', botao: 'IR PARA O MAPA', acao: () => this.router.navigate(['/mapa']), imagem: null, layout: 'default' },
   ];
@@ -233,11 +232,53 @@ export class HomeComponent implements OnDestroy {
   carregando = false;
   notificado = false;
   isSearchBarSticky = false;
+  ordenarPor = 'lotacao';
+  userLat: number | null = null;
+  userLng: number | null = null;
+
+  private statusOrder: Record<string, number> = {
+    'VAZIO': 1,
+    'POUCO_VAZIO': 2,
+    'MODERADO': 3,
+    'CHEIO': 4,
+    'MUITO_CHEIO': 5,
+  };
+
+  private calcularDistancia(lat1: number, lng1: number, lat2: number, lng2: number): number {
+    const R = 6371;
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLng = (lng2 - lng1) * Math.PI / 180;
+    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+              Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+              Math.sin(dLng / 2) * Math.sin(dLng / 2);
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  }
 
   get unidadesFiltradas(): UnidadeSaudeDTO[] {
-    return this.unidades.filter(card =>
+    let lista = this.unidades.filter(card =>
       card.nome.toLowerCase().includes(this.searchTerm.toLowerCase())
     );
+
+    switch (this.ordenarPor) {
+      case 'lotacao':
+        lista.sort((a, b) => (this.statusOrder[a.status] || 0) - (this.statusOrder[b.status] || 0));
+        break;
+      case 'localizacao':
+        if (this.userLat !== null && this.userLng !== null) {
+          lista.sort((a, b) => {
+            if (a.lat == null || a.lng == null) return 1;
+            if (b.lat == null || b.lng == null) return -1;
+            return this.calcularDistancia(this.userLat!, this.userLng!, a.lat, a.lng) -
+                   this.calcularDistancia(this.userLat!, this.userLng!, b.lat, b.lng);
+          });
+        }
+        break;
+      case 'status':
+        lista.sort((a, b) => b.nota - a.nota);
+        break;
+    }
+
+    return lista;
   }
 
   constructor(
@@ -249,6 +290,7 @@ export class HomeComponent implements OnDestroy {
     afterNextRender(() => {
       this.carregarUnidades();
       this.iniciarAutoPlay();
+      this.obterLocalizacao();
 
       this.carouselTrack.nativeElement.addEventListener('transitionend', () => {
         if (!this._wrapPending) return;
@@ -295,6 +337,25 @@ export class HomeComponent implements OnDestroy {
       this.carregando = false;
       this.cdr.detectChanges();
     }
+  }
+
+  obterLocalizacao() {
+    if (typeof navigator !== 'undefined' && navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          this.userLat = position.coords.latitude;
+          this.userLng = position.coords.longitude;
+          this.cdr.detectChanges();
+        },
+        () => {
+          console.warn('Localização não disponível. Ordenação por localização desativada.');
+        }
+      );
+    }
+  }
+
+  aplicarOrdenacao() {
+    this.cdr.detectChanges();
   }
 
   @HostListener('window:scroll')

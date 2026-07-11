@@ -25,8 +25,12 @@ import { environment } from '../../../environments/environment';
               @if (getRankingOriginal(user) === 1) {
                 <div class="mb-4 md:mb-9"></div>
               }
-              <div class="rounded-full w-20 h-20 md:w-28 md:h-28 flex items-center justify-center mb-4 md:mb-7" style="background-color: #eaddff">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-18 h-18 md:w-26 md:h-26" viewBox="0 0 24 24" fill="none" stroke="#523a8c" stroke-width="1.5"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              <div class="rounded-full w-20 h-20 md:w-28 md:h-28 flex items-center justify-center mb-4 md:mb-7 overflow-hidden" style="background-color: #eaddff">
+                @if (user.fotoURL) {
+                  <img [src]="user.fotoURL" alt="{{ user.nome }}" class="w-full h-full object-cover" />
+                } @else {
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-18 h-18 md:w-26 md:h-26" viewBox="0 0 24 24" fill="none" stroke="#523a8c" stroke-width="1.5"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                }
               </div>
               <p class="font-bold text-lg md:text-2xl text-green-800 text-center">{{ user.nome }}</p>
               <p class="text-lg md:text-xl font-bold">{{ user.contribuicoes }}</p>
@@ -43,8 +47,12 @@ import { environment } from '../../../environments/environment';
           <div class="flex items-center justify-between mx-auto max-w-[90%] md:max-w-[90%] bg-white rounded-2xl mb-5 p-3 md:p-3 shadow">
             <div class="flex items-center space-x-2 md:space-x-3">
               <span class="ml-2 md:ml-3 font-bold text-lg md:text-2xl">{{ $index + 1 }}</span>
-              <div class="ml-4 md:ml-15 w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center" style="background-color: #eaddff">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-9 h-9 md:w-11 md:h-11" viewBox="0 0 24 24" fill="none" stroke="#523a8c" stroke-width="1.5"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              <div class="ml-4 md:ml-15 w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center overflow-hidden" style="background-color: #eaddff">
+                @if (item.fotoURL) {
+                  <img [src]="item.fotoURL" alt="{{ item.nome }}" class="w-full h-full object-cover" />
+                } @else {
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-9 h-9 md:w-11 md:h-11" viewBox="0 0 24 24" fill="none" stroke="#523a8c" stroke-width="1.5"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                }
               </div>
               <div class="ml-4 md:ml-10 font-bold text-green-900 text-lg md:text-2xl">{{ item.nome }}</div>
             </div>
@@ -60,10 +68,8 @@ export class RankingComponent implements OnInit {
     { id: 1, label: 'Registrar lotação', href: '/' },
     { id: 2, label: 'Ir para o mapa', href: '/mapa' },
     { id: 3, label: 'Ranking', href: '/ranking' },
-    { id: 4, label: 'Entrar', href: '/entrar' },
-    { id: 5, label: 'Criar conta', href: '/criar-conta' },
-    { id: 6, label: 'Sobre nós', href: '/sobre-nos' },
-    { id: 7, label: 'Configurações', href: '/perfil' },
+    { id: 4, label: 'Sobre nós', href: '/sobre-nos' },
+    { id: 5, label: 'Configurações', href: '/perfil' },
   ];
 
   rankingData: ClienteRankingDTO[] = [];

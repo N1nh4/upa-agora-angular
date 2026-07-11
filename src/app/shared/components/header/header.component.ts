@@ -1,5 +1,8 @@
 import { Component, Input } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
+import { AsyncPipe } from '@angular/common';
+import { Observable } from 'rxjs';
+import { UsuarioService } from '../../../services/usuario.service';
 
 export interface NavLink {
   id: number;
@@ -9,7 +12,7 @@ export interface NavLink {
 
 @Component({
   selector: 'app-header',
-  imports: [RouterLink],
+  imports: [RouterLink, AsyncPipe],
   template: `
     <header
       class="fixed top-0 left-0 w-full h-16 bg-gradient-to-r from-[#004E4C] to-verdeClaro z-50"
@@ -26,6 +29,18 @@ export interface NavLink {
               class="text-white hover:text-gray-300 transition-colors"
             >
               {{ link.label }}
+            </a>
+          }
+          @if (isLoggedIn$ | async) {
+            <button
+              (click)="logout()"
+              class="text-white hover:text-gray-300 transition-colors cursor-pointer"
+            >
+              Sair
+            </button>
+          } @else {
+            <a routerLink="/entrar" class="text-white hover:text-gray-300 transition-colors">
+              Entrar
             </a>
           }
         </nav>
@@ -47,6 +62,22 @@ export interface NavLink {
               {{ link.label }}
             </a>
           }
+          @if (isLoggedIn$ | async) {
+            <button
+              (click)="logout(); menuAberto = false"
+              class="block w-full text-left text-white py-2 hover:text-gray-300 cursor-pointer"
+            >
+              Sair
+            </button>
+          } @else {
+            <a
+              routerLink="/entrar"
+              class="block text-white py-2 hover:text-gray-300"
+              (click)="menuAberto = false"
+            >
+              Entrar
+            </a>
+          }
         </div>
       }
     </header>
@@ -55,4 +86,18 @@ export interface NavLink {
 export class HeaderComponent {
   @Input() navLinks: NavLink[] = [];
   menuAberto = false;
+
+  isLoggedIn$!: Observable<boolean>;
+
+  constructor(
+    private usuarioService: UsuarioService,
+    private router: Router
+  ) {
+    this.isLoggedIn$ = this.usuarioService.isLoggedIn$;
+  }
+
+  logout() {
+    this.usuarioService.logout();
+    this.router.navigate(['/']);
+  }
 }

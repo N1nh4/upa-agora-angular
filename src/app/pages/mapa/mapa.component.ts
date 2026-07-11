@@ -20,10 +20,8 @@ export class MapaComponent {
     { id: 1, label: 'Registrar lotação', href: '/' },
     { id: 2, label: 'Ir para o mapa', href: '/mapa' },
     { id: 3, label: 'Ranking', href: '/ranking' },
-    { id: 4, label: 'Entrar', href: '/entrar' },
-    { id: 5, label: 'Criar conta', href: '/criar-conta' },
-    { id: 6, label: 'Sobre nós', href: '/sobre-nos' },
-    { id: 7, label: 'Configurações', href: '/perfil' },
+    { id: 4, label: 'Sobre nós', href: '/sobre-nos' },
+    { id: 5, label: 'Configurações', href: '/perfil' },
   ];
 
   upas: UnidadeMapaDTO[] = [];
@@ -86,9 +84,22 @@ export class MapaComponent {
         iconAnchor: [16, 16],
       });
 
+      const popupContent = `
+        <div style="text-align:center; min-width:150px">
+          <strong>${upa.nome}</strong>
+          <br/>
+          <a href="https://www.google.com/maps/dir/?api=1&destination=${upa.lat},${upa.lng}"
+             target="_blank"
+             rel="noopener noreferrer"
+             style="display:inline-block; margin-top:8px; padding:6px 12px; background:#004E4C; color:white; border-radius:6px; text-decoration:none; font-size:13px; font-weight:bold; cursor:pointer;">
+            Abrir no Google Maps
+          </a>
+        </div>
+      `;
+
       L.marker([upa.lat, upa.lng], { icon })
         .addTo(this.map)
-        .bindPopup(upa.nome);
+        .bindPopup(popupContent);
     });
   }
 
