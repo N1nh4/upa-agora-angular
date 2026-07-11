@@ -1,5 +1,5 @@
-import { Component, HostListener, OnInit, OnDestroy } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { Component, HostListener, OnDestroy, afterNextRender, ChangeDetectorRef } from '@angular/core';
+import { Router } from '@angular/router';
 import { HeaderComponent, NavLink } from '../../shared/components/header/header.component';
 import { UnidadeService } from '../../services/unidade.service';
 import { UsuarioService } from '../../services/usuario.service';
@@ -13,28 +13,43 @@ import { renderStars, getStatusColorLotacao, getCapacityFromStatus } from '../..
     <div class="w-full min-h-screen pt-16">
       <app-header [navLinks]="navLinks" />
 
-      <div class="w-full py-8 md:py-14 bg-gradient-to-r from-[#004E4C] to-verdeClaro" style="boxShadow: 5px 5px 4px rgba(0, 0, 0, 0.25)">
-        <div class="relative w-full overflow-hidden px-4">
-          <div class="flex transition-transform duration-500 ease-in-out" [style.transform]="'translateX(-' + (slideAtual * 100) + '%)'">
-            @for (slide of slides; track slide; let i = $index) {
-              <div class="w-full md:w-[700px] shrink-0 px-2 md:px-5">
-                <div class="p-4 md:p-6 bg-white rounded-2xl shadow-sm min-h-[160px] md:min-h-[200px] flex flex-col justify-between relative" style="boxShadow: 5px 5px 4px rgba(0, 0, 0, 0.25)">
-                  <div class="flex flex-col">
-                    <h1 class="text-xl md:text-3xl font-semibold text-gray-800 mb-2">{{ slide.titulo }}</h1>
-                    <p class="text-sm md:text-xl text-gray-600 mb-4">{{ slide.descricao }}</p>
+      <div class="w-full py-14 bg-gradient-to-r from-[#004E4C] to-verdeClaro" style="boxShadow: 5px 5px 4px rgba(0, 0, 0, 0.25)">
+        <div class="relative w-full overflow-hidden">
+          <div class="flex gap-4 transition-transform duration-500 ease-in-out" [style.transform]="carouselTransform" [style.paddingLeft.px]="paddingOffset" [style.paddingRight.px]="paddingOffset">
+            @for (slide of slides; track $index) {
+              @if (slide.layout === 'hero') {
+                <div class="w-[700px] max-w-[90vw] h-[200px] shrink-0 p-6 bg-white rounded-2xl shadow-sm flex flex-col justify-between relative" style="boxShadow: 5px 5px 4px rgba(0, 0, 0, 0.25)">
+                  <div class="flex flex-row items-center justify-between">
+                    <div class="flex flex-col w-3/5">
+                      <h1 class="text-3xl font-semibold text-gray-800 mb-2">{{ slide.titulo }}</h1>
+                      <p class="text-xl text-gray-600 mb-4">{{ slide.descricao }}</p>
+                    </div>
                   </div>
-                  <button
-                    class="bg-[#106A43] hover:bg-[#0c5033] text-white text-sm md:text-lg rounded-lg px-4 py-2 md:w-4/12 flex items-center justify-center"
-                    (click)="slide.acao()"
-                  >
-                    {{ slide.botao }}
-                  </button>
+                  <button class="bg-[#106A43] hover:bg-[#0c5033] text-white text-lg rounded-lg w-4/12 py-2 absolute bottom-10 right-10" (click)="slide.acao()">{{ slide.botao }}</button>
                 </div>
-              </div>
+              } @else if (slide.layout === 'ods') {
+                <div class="w-[700px] max-w-[90vw] h-[200px] shrink-0 p-10 bg-[#106A43] rounded-2xl shadow-sm text-white flex flex-row justify-between items-center overflow-visible" style="boxShadow: 5px 5px 4px rgba(0, 0, 0, 0.25)">
+                  <div class="flex flex-col w-3/5">
+                    <h1 class="text-3xl font-semibold mb-2">{{ slide.titulo }}</h1>
+                    <p class="text-xl mb-4">{{ slide.descricao }}</p>
+                  </div>
+                  <div class="flex justify-end w-2/5">
+                    <img [src]="slide.imagem" alt="ODS 3" class="w-auto h-[150px] object-contain" />
+                  </div>
+                </div>
+              } @else {
+                <div class="w-[700px] max-w-[90vw] h-[200px] shrink-0 p-6 bg-white rounded-2xl shadow-sm flex flex-col justify-between" style="boxShadow: 5px 5px 4px rgba(0, 0, 0, 0.25)">
+                  <div>
+                    <h1 class="text-2xl font-semibold text-gray-800 mb-2">{{ slide.titulo }}</h1>
+                    <p class="text-base text-gray-600 mb-4">{{ slide.descricao }}</p>
+                  </div>
+                  <button class="bg-[#106A43] hover:bg-[#0c5033] text-white text-lg rounded-lg w-4/12 py-2" (click)="slide.acao()">{{ slide.botao }}</button>
+                </div>
+              }
             }
           </div>
-          <button class="absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 rounded-full p-2 hover:bg-white" (click)="slideAnterior()">❮</button>
-          <button class="absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 rounded-full p-2 hover:bg-white" (click)="proximoSlide()">❯</button>
+          <button class="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 rounded-full p-2 hover:bg-white shadow-md" (click)="slideAnterior()">❮</button>
+          <button class="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 rounded-full p-2 hover:bg-white shadow-md" (click)="proximoSlide()">❯</button>
         </div>
       </div>
 
@@ -117,11 +132,19 @@ import { renderStars, getStatusColorLotacao, getCapacityFromStatus } from '../..
               <div class="flex flex-col text-verdeEscuro w-full justify-center text-justify pl-0 md:pl-4 gap-y-1 mt-4 md:mt-0">
                 <h1 class="text-base text-left font-bold">{{ card.nome }}</h1>
                 <div class="flex items-center">
-                  @for (star of getEstrelas(card.nota); track star) {
+                  @for (star of getEstrelas(card.nota); track $index) {
                     @if (star === 'filled') {
                       <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="black"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
                     } @else if (star === 'half') {
-                      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="black"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24">
+                        <defs>
+                          <clipPath [attr.id]="'halfStarHome' + $index">
+                            <rect x="0" y="0" width="12" height="24"/>
+                          </clipPath>
+                        </defs>
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="none" stroke="black" stroke-width="2"/>
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="black" [attr.clip-path]="'url(#halfStarHome' + $index + ')'"/>
+                      </svg>
                     } @else {
                       <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
                     }
@@ -131,7 +154,7 @@ import { renderStars, getStatusColorLotacao, getCapacityFromStatus } from '../..
                 <p class="text-xs"><span class="font-bold">Telefone:</span> {{ card.telefone }}</p>
                 <p class="font-bold text-sm">Status: {{ card.status.split('_').join(' ') }}</p>
                 <div class="flex items-center">
-                  @for (icon of getUserIcons(card.status); track icon) {
+                  @for (icon of getUserIcons(card.status); track $index) {
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" [attr.stroke]="icon.cor" stroke-width="2" [class.fill-current]="icon.preenchido">
                       <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
                     </svg>
@@ -149,18 +172,14 @@ import { renderStars, getStatusColorLotacao, getCapacityFromStatus } from '../..
           </div>
         } @empty {
           <div class="col-span-full text-center text-gray-500 py-8">
-            @if (carregando) {
-              <p>Carregando unidades...</p>
-            } @else {
-              <p>Nenhuma unidade encontrada.</p>
-            }
+            <p>Carregando unidades...</p>
           </div>
         }
       </div>
     </div>
   `,
 })
-export class HomeComponent implements OnInit, OnDestroy {
+export class HomeComponent implements OnDestroy {
   navLinks: NavLink[] = [
     { id: 1, label: 'Registrar lotação', href: '/' },
     { id: 2, label: 'Ir para o mapa', href: '/mapa' },
@@ -172,18 +191,33 @@ export class HomeComponent implements OnInit, OnDestroy {
   ];
 
   slides = [
-    { titulo: 'Atualize o status da sua unidade de saúde', descricao: 'Ajude outros usuários informando a situação atual das emergências.', botao: 'REGISTRAR LOTAÇÃO', acao: () => this.scrollParaBusca() },
-    { titulo: 'Seu impacto conta', descricao: 'Veja como suas contribuições ajudam a comunidade a se manter informada.', botao: 'VER MEUS PONTOS', acao: () => {} },
-    { titulo: 'Objetivo 3: Saúde e Bem-Estar', descricao: 'Contribuindo para os Objetivos de Desenvolvimento Sustentável.', botao: 'SAIBA MAIS', acao: () => {} },
-    { titulo: 'Descubra unidades próximas', descricao: 'Utilize o mapa para encontrar os hospitais e clínicas mais próximos de você.', botao: 'IR PARA O MAPA', acao: () => this.router.navigate(['/mapa']) },
+    { titulo: 'Atualize o status da sua unidade de saúde', descricao: 'Ajude outros usuários informando a situação atual das emergências.', botao: 'REGISTRAR LOTAÇÃO', acao: () => this.scrollParaBusca(), imagem: null, layout: 'hero' },
+    { titulo: 'Seu impacto conta', descricao: 'Veja como suas contribuições ajudam a comunidade a se manter informada.', botao: 'VER MEUS PONTOS', acao: () => {}, imagem: null, layout: 'default' },
+    { titulo: 'Objetivo 3: Saúde e Bem-Estar', descricao: 'Contribuindo para os Objetivos de Desenvolvimento Sustentável.', botao: 'SAIBA MAIS', acao: () => {}, imagem: '/images/ods3.png', layout: 'ods' },
+    { titulo: 'Descubra unidades próximas', descricao: 'Utilize o mapa para encontrar os hospitais e clínicas mais próximos de você.', botao: 'IR PARA O MAPA', acao: () => this.router.navigate(['/mapa']), imagem: null, layout: 'default' },
   ];
 
   slideAtual = 0;
   private autoPlayInterval: any;
 
+  get paddingOffset(): number {
+    if (typeof document === 'undefined') return 0;
+    const vw = document.documentElement.clientWidth;
+    const cardW = Math.min(700, vw * 0.9);
+    return Math.max(0, (vw - cardW) / 2);
+  }
+
+  get carouselTransform(): string {
+    const vw = typeof document !== 'undefined' ? document.documentElement.clientWidth : 1200;
+    const cardW = Math.min(700, vw * 0.9);
+    const gap = 16;
+    const offset = -this.slideAtual * (cardW + gap);
+    return `translateX(${offset}px)`;
+  }
+
   unidades: UnidadeSaudeDTO[] = [];
   searchTerm = '';
-  carregando = true;
+  carregando = false;
   notificado = false;
   isSearchBarSticky = false;
 
@@ -196,12 +230,13 @@ export class HomeComponent implements OnInit, OnDestroy {
   constructor(
     private unidadeService: UnidadeService,
     private usuarioService: UsuarioService,
-    private router: Router
-  ) {}
-
-  ngOnInit() {
-    this.carregarUnidades();
-    this.iniciarAutoPlay();
+    private router: Router,
+    private cdr: ChangeDetectorRef,
+  ) {
+    afterNextRender(() => {
+      this.carregarUnidades();
+      this.iniciarAutoPlay();
+    });
   }
 
   ngOnDestroy() {
@@ -222,12 +257,15 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   async carregarUnidades() {
+    this.carregando = true;
     try {
       this.unidades = await this.unidadeService.getUnidades();
+      console.log('[Home] carregarUnidades concluiu, unidades recebidas:', this.unidades?.length);
     } catch (err) {
-      console.error('Erro ao carregar unidades:', err);
+      console.error('[Home] Erro ao carregar unidades:', err);
     } finally {
       this.carregando = false;
+      this.cdr.detectChanges();
     }
   }
 
@@ -241,7 +279,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   scrollParaBusca() {
-    window.scrollTo({ top: 350, behavior: 'smooth' });
+    if (typeof window !== 'undefined') window.scrollTo({ top: 350, behavior: 'smooth' });
   }
 
   proximoSlide() {

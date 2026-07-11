@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HeaderComponent, NavLink } from '../../shared/components/header/header.component';
 import { BarraTituloComponent } from '../../shared/components/barra-titulo/barra-titulo.component';
@@ -22,14 +22,14 @@ import { getStatusColor, getStatusArray } from '../../utils/rendering';
         </div>
       } @else {
         <div class="flex flex-col w-full h-full flex-grow overflow-y-auto">
-          <div class="flex flex-col lg:flex-row justify-between p-4 md:p-8">
-            <div class="flex justify-center lg:w-auto mb-6 lg:mb-0">
-              <img [src]="unidade.imagemURL" alt="Imagem da unidade" class="w-full max-w-[300px] h-auto object-cover max-h-96 rounded-lg" />
+          <div class="flex flex-col lg:flex-row justify-between">
+            <div class="flex items-center justify-center">
+              <img [src]="unidade.imagemURL" alt="Imagem da unidade" class="w-full h-full object-cover max-h-96" />
             </div>
 
-            <div class="flex flex-col justify-center py-4 md:py-8 gap-2 text-base md:text-xl px-4 lg:px-8">
-              <h1 class="text-verdeEscuro font-bold text-2xl md:text-3xl mb-4">Informações da unidade</h1>
-              <h2 class="text-verdeEscuro font-bold text-xl md:text-2xl">{{ unidade.nome }}</h2>
+            <div class="flex flex-col justify-center py-8 gap-2 text-xl px-8">
+              <h1 class="text-verdeEscuro font-bold text-3xl mb-4">Informações da unidade</h1>
+              <h2 class="text-verdeEscuro font-bold text-2xl">{{ unidade.nome }}</h2>
               <span class="flex items-center italic text-verdeEscuro">
                 <span>Ative as notificações dessa unidade</span>
                 <svg xmlns="http://www.w3.org/2000/svg" class="ml-2" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
@@ -52,22 +52,22 @@ import { getStatusColor, getStatusArray } from '../../utils/rendering';
               </span>
             </div>
 
-            <div class="flex justify-center items-start lg:items-center">
-              <div class="flex flex-col bg-verdePastel shadow-md rounded-2xl m-4 max-w-sm">
+            <div class="flex justify-center items-center">
+              <div class="flex flex-col bg-verdePastel shadow-md rounded-2xl m-4 max-h-80">
                 <span class="bg-[#0E6F4C] py-2 pl-4 text-white rounded-t-2xl font-bold">Como avaliar o Status de lotação?</span>
                 <div class="flex flex-1 justify-center items-center p-4">
-                  <ul class="flex flex-col gap-4 text-zinc-500 font-bold text-sm">
+                  <ul class="flex flex-col gap-4 text-zinc-500 font-bold">
                     <li class="flex items-center gap-2">
                       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0E6F4C" stroke-width="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                      VAZIO - quase sem ninguém.
+                      VAZIO - está quase sem ninguém.
                     </li>
                     <li class="flex items-center gap-2">
                       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0E6F4C" stroke-width="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                      POUCO VAZIO - pouca gente.
+                      POUCO VAZIO - está com pouca gente.
                     </li>
                     <li class="flex items-center gap-2">
                       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fe9a2e" stroke-width="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                      MODERADO - moderado.
+                      MODERADO - quantidade moderada de pessoas.
                     </li>
                     <li class="flex items-center gap-2">
                       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fb2c36" stroke-width="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
@@ -75,7 +75,7 @@ import { getStatusColor, getStatusArray } from '../../utils/rendering';
                     </li>
                     <li class="flex items-center gap-2">
                       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fb2c36" stroke-width="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                      MUITO CHEIO - muito cheio.
+                      MUITO CHEIO - está muito cheio.
                     </li>
                   </ul>
                 </div>
@@ -83,12 +83,12 @@ import { getStatusColor, getStatusArray } from '../../utils/rendering';
             </div>
           </div>
 
-          <div class="bg-verdeEscuro px-4 md:px-8 py-4 flex flex-col justify-between gap-4">
-            <span class="italic text-white text-xl md:text-2xl text-center md:text-left">
+          <div class="bg-verdeEscuro px-8 py-4 flex flex-col justify-between gap-2">
+            <span class="italic text-white text-2xl">
               Confirme os dados da unidade e selecione o Status de lotação:
             </span>
 
-            <div class="flex gap-2 md:gap-4 items-center justify-center flex-wrap">
+            <div class="flex gap-4 items-center justify-center">
               @for (status of statusArray; track status; let i = $index) {
                 <div
                   class="cursor-pointer flex flex-col items-center"
@@ -96,7 +96,7 @@ import { getStatusColor, getStatusArray } from '../../utils/rendering';
                   (mouseleave)="hoveredIndex = null"
                   (click)="selecionarStatus(i)"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" [attr.stroke]="getCorIcone(i)" stroke-width="2">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" [attr.stroke]="getCorIcone(i)" stroke-width="2">
                     <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
                   </svg>
                   <span class="text-white text-xs mt-1">{{ status.split('_').join(' ') }}</span>
@@ -104,9 +104,9 @@ import { getStatusColor, getStatusArray } from '../../utils/rendering';
               }
             </div>
 
-            <div class="flex justify-center gap-4 md:gap-12">
-              <button class="bg-white text-verdeEscuro rounded-2xl h-10 md:h-12 px-6 md:w-48 font-bold cursor-pointer" (click)="cancelar()">CANCELAR</button>
-              <button class="bg-white text-verdeEscuro rounded-2xl h-10 md:h-12 px-6 md:w-48 font-bold cursor-pointer" (click)="enviarAtualizacao()">ENVIAR</button>
+            <div class="flex justify-center gap-12">
+              <button class="bg-white text-verdeEscuro rounded-2xl h-12 w-48 font-bold cursor-pointer" (click)="cancelar()">CANCELAR</button>
+              <button class="bg-white text-verdeEscuro rounded-2xl h-12 w-48 font-bold cursor-pointer" (click)="enviarAtualizacao()">ENVIAR</button>
             </div>
           </div>
         </div>
@@ -135,11 +135,12 @@ export class RegistrarLotacaoComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private unidadeService: UnidadeService,
-    private usuarioService: UsuarioService
+    private usuarioService: UsuarioService,
+    private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit() {
-    window.scrollTo(0, 0);
+    if (typeof window !== 'undefined') window.scrollTo(0, 0);
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       this.carregarUnidade(parseInt(id));
@@ -151,6 +152,8 @@ export class RegistrarLotacaoComponent implements OnInit {
       this.unidade = await this.unidadeService.getUnidade(id);
     } catch (err) {
       console.error('Erro ao carregar unidade:', err);
+    } finally {
+      this.cdr.detectChanges();
     }
   }
 

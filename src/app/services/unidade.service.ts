@@ -8,12 +8,16 @@ export class UnidadeService {
   private baseUrl = environment.apiUrl;
 
   async getUnidades(): Promise<UnidadeSaudeDTO[]> {
+    console.log('[UnidadeService] getUnidades chamando:', this.baseUrl + '/');
     const response = await fetch(`${this.baseUrl}/`, {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },
     });
+    console.log('[UnidadeService] getUnidades resposta status:', response.status);
     if (!response.ok) throw new Error('Erro ao buscar unidades');
-    return response.json();
+    const data = await response.json();
+    console.log('[UnidadeService] getUnidades dados:', data?.length, 'unidades');
+    return data;
   }
 
   async getUnidade(id: number): Promise<UnidadePaginaDTO> {

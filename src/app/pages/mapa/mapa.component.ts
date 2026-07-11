@@ -1,5 +1,4 @@
-import { Component, Inject, OnInit, PLATFORM_ID, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
+import { Component, ViewChild, ElementRef, afterNextRender } from '@angular/core';
 import { HeaderComponent, NavLink } from '../../shared/components/header/header.component';
 import { MapaService } from '../../services/mapa.service';
 import { UnidadeMapaDTO } from '../../models/unidade-mapa-dto';
@@ -8,13 +7,13 @@ import { UnidadeMapaDTO } from '../../models/unidade-mapa-dto';
   selector: 'app-mapa',
   imports: [HeaderComponent],
   template: `
-    <div class="fixed inset-0 flex flex-col overflow-hidden">
+    <div class="fixed inset-0 overflow-hidden">
       <app-header [navLinks]="navLinks" />
-      <div class="flex-1 z-0 mt-16" #mapContainer></div>
+      <div #mapContainer style="position: absolute; top: 64px; left: 0; width: 100%; height: calc(100% - 64px);"></div>
     </div>
   `,
 })
-export class MapaComponent implements OnInit, AfterViewInit {
+export class MapaComponent {
   @ViewChild('mapContainer', { static: true }) mapContainer!: ElementRef;
 
   navLinks: NavLink[] = [
@@ -29,17 +28,22 @@ export class MapaComponent implements OnInit, AfterViewInit {
 
   upas: UnidadeMapaDTO[] = [];
   private map: any = null;
-  private isBrowser: boolean;
 
   constructor(
     private mapaService: MapaService,
-    @Inject(PLATFORM_ID) platformId: Object
   ) {
-    this.isBrowser = isPlatformBrowser(platformId);
+    afterNextRender(() => {
+      console.log('[Mapa] afterNextRender executou');
+      this.carregarDados().then(() => {
+        setTimeout(() => {
+          console.log('[Mapa] chamando initMap');
+          this.initMap();
+        }, 100);
+      });
+    });
   }
 
-  async ngOnInit() {
-    if (!this.isBrowser) return;
+  private async carregarDados() {
     try {
       this.upas = await this.mapaService.getUnidadesMapa();
     } catch (err) {
@@ -47,15 +51,13 @@ export class MapaComponent implements OnInit, AfterViewInit {
     }
   }
 
-  ngAfterViewInit() {
-    if (!this.isBrowser) return;
-    this.initMap();
-  }
-
   private async initMap() {
+    console.log('[Mapa] initMap iniciou');
     const L = await import('leaflet');
     const el = this.mapContainer.nativeElement;
-    if (!el) return;
+    if (!el) { console.log('[Mapa] erro: elemento nao encontrado'); return; }
+
+    console.log('[Mapa] container dimensions:', el.clientWidth, 'x', el.clientHeight);
 
     this.map = L.map(el, {
       center: [-12.97, -38.51],
@@ -63,11 +65,18 @@ export class MapaComponent implements OnInit, AfterViewInit {
       scrollWheelZoom: true,
     });
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    const tileLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap',
-    }).addTo(this.map);
+    });
+
+    tileLayer.on('tileerror', (e: any) => {
+      console.error('[Mapa] tile error:', e);
+    });
+
+    tileLayer.addTo(this.map);
 
     setTimeout(() => this.map.invalidateSize(), 200);
+    setTimeout(() => this.map.invalidateSize(), 500);
 
     this.upas.forEach((upa) => {
       const cor = this.definirCor(upa.status);

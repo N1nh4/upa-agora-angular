@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HeaderComponent, NavLink } from '../../shared/components/header/header.component';
 import { BarraTituloComponent } from '../../shared/components/barra-titulo/barra-titulo.component';
@@ -20,18 +20,26 @@ import { renderStars, getStatusColorLotacao, getCapacityFromStatus } from '../..
           <p class="text-gray-600 mt-2">Verifique o ID da unidade na URL.</p>
         </div>
       } @else {
-        <div class="flex flex-col lg:flex-row w-full max-w-5xl p-4 md:p-8 text-verdeEscuro">
-          <div class="flex justify-center lg:w-2/5 mb-6 lg:mb-0 lg:mr-8">
-            <img [src]="unidade.imagemURL" [alt]="unidade.nome" class="w-full max-w-[400px] rounded-lg shadow-lg" />
+        <div class="flex flex-col md:flex-row w-11/12 md:w-3/5 p-4 md:p-8 text-verdeEscuro">
+          <div class="flex justify-center md:w-2/5 mb-6 md:mb-0 md:mr-8">
+            <img [src]="unidade.imagemURL" [alt]="unidade.nome" class="w-full md:w-[400px] h-auto md:h-[300px] rounded-lg shadow-lg" />
           </div>
-          <div class="flex flex-col justify-center text-base md:text-lg lg:w-3/5">
+          <div class="flex flex-col justify-center text-base md:text-lg md:w-3/5">
             <h2 class="text-xl md:text-2xl font-bold mb-4">{{ unidade.nome }}</h2>
             <div class="flex items-center mb-4 cursor-pointer" (click)="avaliacaoClicada()">
-              @for (star of getEstrelas(unidade.nota); track star) {
+              @for (star of getEstrelas(unidade.nota); track $index) {
                 @if (star === 'filled') {
                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="black"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
                 } @else if (star === 'half') {
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="black"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                    <defs>
+                      <clipPath [attr.id]="'halfStar' + $index">
+                        <rect x="0" y="0" width="12" height="24"/>
+                      </clipPath>
+                    </defs>
+                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="none" stroke="black" stroke-width="2"/>
+                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="black" [attr.clip-path]="'url(#halfStar' + $index + ')'"/>
+                  </svg>
                 } @else {
                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
                 }
@@ -40,28 +48,30 @@ import { renderStars, getStatusColorLotacao, getCapacityFromStatus } from '../..
             </div>
             <p class="mb-2"><span class="font-bold">Endereço:</span> {{ unidade.endereco.bairro.nome }}</p>
             <p class="mb-2"><span class="font-bold">Telefone:</span> {{ unidade.telefone }}</p>
-            <p class="flex flex-wrap mb-2 font-bold items-center">
-              Status: {{ unidade.status.split('_').join(' ') }}
-              <span class="cursor-pointer ml-2" (click)="mostrarInfo = !mostrarInfo">
+            <p class="flex mb-2 font-bold items-center">
+              Status: {{ unidade.status }}
+              <span class="cursor-pointer ml-2" (click)="mostrarInfo = true">
                 <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
               </span>
             </p>
             @if (mostrarInfo) {
-              <div class="bg-gray-100 rounded-lg p-4 mb-4 border">
-                <h3 class="font-bold mb-2">Como avaliar o Status de lotação?</h3>
-                <ul class="pl-5 space-y-1 text-sm">
-                  <li class="flex items-center gap-1 text-emerald-500 font-bold">VAZIO: O local está quase sem ninguém.</li>
-                  <li class="flex items-center gap-1 text-emerald-500 font-bold">POUCO VAZIO: O local está com pouca gente.</li>
-                  <li class="flex items-center gap-1 text-amber-500 font-bold">MODERADO: Quantidade moderada de pessoas.</li>
-                  <li class="flex items-center gap-1 text-red-500 font-bold">CHEIO: O local está cheio.</li>
-                  <li class="flex items-center gap-1 text-red-500 font-bold">MUITO CHEIO: O local está muito cheio.</li>
-                </ul>
-                <button (click)="mostrarInfo = false" class="mt-2 bg-gray-200 hover:bg-gray-300 px-4 py-1 rounded text-sm">Fechar</button>
+              <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50" (click)="mostrarInfo = false">
+                <div class="bg-white rounded-lg p-6 max-w-md mx-4 shadow-xl" (click)="$event.stopPropagation()">
+                  <h3 class="font-bold text-lg mb-4">Como avaliar o Status de lotação?</h3>
+                  <ul class="space-y-3">
+                    <li class="flex items-center gap-2"><span class="font-bold text-emerald-500">VAZIO</span>: O local está quase sem ninguém.</li>
+                    <li class="flex items-center gap-2"><span class="font-bold text-emerald-500">POUCO VAZIO</span>: O local está com pouca gente.</li>
+                    <li class="flex items-center gap-2"><span class="font-bold text-amber-500">MODERADO</span>: Quantidade moderada de pessoas.</li>
+                    <li class="flex items-center gap-2"><span class="font-bold text-red-500">CHEIO</span>: O local está cheio.</li>
+                    <li class="flex items-center gap-2"><span class="font-bold text-red-500">MUITO CHEIO</span>: O local está muito cheio.</li>
+                  </ul>
+                  <button (click)="mostrarInfo = false" class="mt-4 bg-gray-200 hover:bg-gray-300 px-4 py-1 rounded text-sm">Fechar</button>
+                </div>
               </div>
             }
             <div class="flex mb-2">
-              @for (icon of getUserIcons(unidade.status); track icon) {
-                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" [attr.stroke]="icon.cor" stroke-width="2">
+              @for (icon of getUserIcons(unidade.status); track $index) {
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" [attr.fill]="icon.preenchido ? 'currentColor' : 'none'" [attr.stroke]="icon.cor" [attr.stroke-width]="icon.preenchido ? '0' : '2'">
                   <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
                 </svg>
               }
@@ -73,7 +83,7 @@ import { renderStars, getStatusColorLotacao, getCapacityFromStatus } from '../..
           </div>
         </div>
 
-        <div class="mt-8 pt-8 border-t border-gray-200 w-full max-w-4xl p-4 md:p-20">
+        <div class="mt-8 pt-8 border-t border-gray-200 w-4/5 p-4 md:p-20">
           <div class="flex items-center mb-4 gap-4">
             <h2 class="text-xl md:text-2xl font-bold text-verdeEscuro mb-4">Comentários</h2>
             <div class="flex">
@@ -144,11 +154,12 @@ export class UnidadeDetailComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private unidadeService: UnidadeService
+    private unidadeService: UnidadeService,
+    private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit() {
-    window.scrollTo(0, 0);
+    if (typeof window !== 'undefined') window.scrollTo(0, 0);
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       this.carregarUnidade(parseInt(id));
@@ -160,12 +171,15 @@ export class UnidadeDetailComponent implements OnInit {
       this.unidade = await this.unidadeService.getUnidade(id);
     } catch (err) {
       console.error('Erro ao carregar unidade:', err);
+    } finally {
+      this.cdr.detectChanges();
     }
   }
 
   irParaRegistrarLotacao() {
-    if (this.unidade) {
-      this.router.navigate(['/unidade', this.unidade.id, 'registrar-lotacao']);
+    const id = this.route.snapshot.paramMap.get('id');
+    if (id) {
+      this.router.navigate(['/unidade', id, 'registrar-lotacao']);
     }
   }
 

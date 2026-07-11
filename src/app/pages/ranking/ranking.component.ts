@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { HeaderComponent, NavLink } from '../../shared/components/header/header.component';
 import { ClienteService } from '../../services/cliente.service';
 import { ClienteRankingDTO } from '../../models/cliente-ranking-dto';
@@ -81,7 +81,7 @@ export class RankingComponent implements OnInit {
     return order;
   }
 
-  constructor(private clienteService: ClienteService) {}
+  constructor(private clienteService: ClienteService, private cdr: ChangeDetectorRef) {}
 
   async ngOnInit() {
     try {
@@ -91,6 +91,8 @@ export class RankingComponent implements OnInit {
       }
     } catch (error) {
       console.error('Erro ao carregar ranking:', error);
+    } finally {
+      this.cdr.detectChanges();
     }
   }
 
