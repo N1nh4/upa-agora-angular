@@ -35,10 +35,10 @@ export class MapaComponent {
     afterNextRender(() => {
       console.log('[Mapa] afterNextRender executou');
       this.carregarDados().then(() => {
-        setTimeout(() => {
+        requestAnimationFrame(() => {
           console.log('[Mapa] chamando initMap');
           this.initMap();
-        }, 100);
+        });
       });
     });
   }
@@ -75,8 +75,7 @@ export class MapaComponent {
 
     tileLayer.addTo(this.map);
 
-    setTimeout(() => this.map.invalidateSize(), 200);
-    setTimeout(() => this.map.invalidateSize(), 500);
+    requestAnimationFrame(() => this.map.invalidateSize());
 
     this.upas.forEach((upa) => {
       const cor = this.definirCor(upa.status);

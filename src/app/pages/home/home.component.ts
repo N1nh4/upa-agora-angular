@@ -1,4 +1,4 @@
-import { Component, HostListener, OnDestroy, afterNextRender, ChangeDetectorRef } from '@angular/core';
+import { Component, ElementRef, HostListener, OnDestroy, ViewChild, afterNextRender, ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { HeaderComponent, NavLink } from '../../shared/components/header/header.component';
 import { UnidadeService } from '../../services/unidade.service';
@@ -14,42 +14,54 @@ import { renderStars, getStatusColorLotacao, getCapacityFromStatus } from '../..
       <app-header [navLinks]="navLinks" />
 
       <div class="w-full py-14 bg-gradient-to-r from-[#004E4C] to-verdeClaro" style="boxShadow: 5px 5px 4px rgba(0, 0, 0, 0.25)">
-        <div class="relative w-full overflow-hidden">
-          <div class="flex gap-4 transition-transform duration-500 ease-in-out" [style.transform]="carouselTransform" [style.paddingLeft.px]="paddingOffset" [style.paddingRight.px]="paddingOffset">
-            @for (slide of slides; track $index) {
-              @if (slide.layout === 'hero') {
-                <div class="w-[700px] max-w-[90vw] h-[200px] shrink-0 p-6 bg-white rounded-2xl shadow-sm flex flex-col justify-between relative" style="boxShadow: 5px 5px 4px rgba(0, 0, 0, 0.25)">
-                  <div class="flex flex-row items-center justify-between">
-                    <div class="flex flex-col w-3/5">
-                      <h1 class="text-3xl font-semibold text-gray-800 mb-2">{{ slide.titulo }}</h1>
-                      <p class="text-xl text-gray-600 mb-4">{{ slide.descricao }}</p>
+        <div class="relative w-full mx-auto">
+          <div class="overflow-hidden">
+            <div #carouselTrack class="flex -ml-20" [style.transform]="carouselTransform" [style.transition]="disableAnimation ? 'none' : 'transform 500ms ease-in-out'">
+              @for (slide of displayedSlides; track $index) {
+                @if (slide.layout === 'hero') {
+                  <div class="pb-4 min-w-0 shrink-0 grow-0 pl-20 basis-auto">
+                    <div class="p-6 bg-white rounded-2xl shadow-sm w-[700px] h-[200px] flex flex-col justify-between relative" style="box-shadow: 5px 5px 4px rgba(0, 0, 0, 0.25)">
+                      <div class="flex flex-row items-center justify-between">
+                        <div class="flex flex-col w-3/5">
+                          <h1 class="text-3xl font-semibold text-gray-800 mb-2">{{ slide.titulo }}</h1>
+                          <p class="text-xl text-gray-600 mb-4">{{ slide.descricao }}</p>
+                        </div>
+                      </div>
+                      <button class="bg-[#106A43] hover:bg-[#0c5033] text-white text-lg rounded-lg w-4/12 py-2 absolute bottom-10 right-10" (click)="slide.acao()">{{ slide.botao }}</button>
                     </div>
                   </div>
-                  <button class="bg-[#106A43] hover:bg-[#0c5033] text-white text-lg rounded-lg w-4/12 py-2 absolute bottom-10 right-10" (click)="slide.acao()">{{ slide.botao }}</button>
-                </div>
-              } @else if (slide.layout === 'ods') {
-                <div class="w-[700px] max-w-[90vw] h-[200px] shrink-0 p-10 bg-[#106A43] rounded-2xl shadow-sm text-white flex flex-row justify-between items-center overflow-visible" style="boxShadow: 5px 5px 4px rgba(0, 0, 0, 0.25)">
-                  <div class="flex flex-col w-3/5">
-                    <h1 class="text-3xl font-semibold mb-2">{{ slide.titulo }}</h1>
-                    <p class="text-xl mb-4">{{ slide.descricao }}</p>
+                } @else if (slide.layout === 'ods') {
+                  <div class="pb-4 min-w-0 shrink-0 grow-0 pl-20 basis-auto overflow-visible">
+                    <div class="p-10 bg-[#106A43] rounded-2xl shadow-sm text-white w-[700px] h-[200px] flex flex-row justify-between items-center overflow-visible" style="box-shadow: 5px 5px 4px rgba(0, 0, 0, 0.25)">
+                      <div class="flex flex-col w-3/5">
+                        <h1 class="text-3xl font-semibold mb-2">{{ slide.titulo }}</h1>
+                        <p class="text-xl mb-4">{{ slide.descricao }}</p>
+                      </div>
+                      <div class="flex justify-end w-1/2">
+                        <img [src]="slide.imagem" alt="ODS 3" class="w-auto h-[150px] object-contain" />
+                      </div>
+                    </div>
                   </div>
-                  <div class="flex justify-end w-2/5">
-                    <img [src]="slide.imagem" alt="ODS 3" class="w-auto h-[150px] object-contain" />
+                } @else {
+                  <div class="pb-4 min-w-0 shrink-0 grow-0 pl-20 basis-auto">
+                    <div class="p-6 bg-white rounded-2xl shadow-sm w-[700px] h-[200px] flex flex-col justify-between" style="box-shadow: 5px 5px 4px rgba(0, 0, 0, 0.25)">
+                      <div>
+                        <h1 class="text-2xl font-semibold text-gray-800 mb-2">{{ slide.titulo }}</h1>
+                        <p class="text-base text-gray-600 mb-4">{{ slide.descricao }}</p>
+                      </div>
+                      <button class="bg-[#106A43] hover:bg-[#0c5033] text-white text-lg rounded-lg w-4/12 py-2" (click)="slide.acao()">{{ slide.botao }}</button>
+                    </div>
                   </div>
-                </div>
-              } @else {
-                <div class="w-[700px] max-w-[90vw] h-[200px] shrink-0 p-6 bg-white rounded-2xl shadow-sm flex flex-col justify-between" style="boxShadow: 5px 5px 4px rgba(0, 0, 0, 0.25)">
-                  <div>
-                    <h1 class="text-2xl font-semibold text-gray-800 mb-2">{{ slide.titulo }}</h1>
-                    <p class="text-base text-gray-600 mb-4">{{ slide.descricao }}</p>
-                  </div>
-                  <button class="bg-[#106A43] hover:bg-[#0c5033] text-white text-lg rounded-lg w-4/12 py-2" (click)="slide.acao()">{{ slide.botao }}</button>
-                </div>
+                }
               }
-            }
+            </div>
           </div>
-          <button class="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 rounded-full p-2 hover:bg-white shadow-md" (click)="slideAnterior()">❮</button>
-          <button class="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 rounded-full p-2 hover:bg-white shadow-md" (click)="proximoSlide()">❯</button>
+          <button class="absolute size-8 rounded-full top-1/2 left-4 -translate-y-1/2 border bg-white hover:bg-gray-100 flex items-center justify-center shadow-xs" (click)="slideAnterior()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+          </button>
+          <button class="absolute size-8 rounded-full top-1/2 right-4 -translate-y-1/2 border bg-white hover:bg-gray-100 flex items-center justify-center shadow-xs" (click)="proximoSlide()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+          </button>
         </div>
       </div>
 
@@ -97,9 +109,9 @@ import { renderStars, getStatusColorLotacao, getCapacityFromStatus } from '../..
         </select>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 px-4 md:pl-10 md:pr-10 place-items-center justify-center mt-8">
+      <div class="grid grid-cols-1 md:grid-cols-3 pl-10 pr-10 place-items-center justify-center mt-8">
         @for (card of unidadesFiltradas; track card.id) {
-          <div class="flex flex-col relative bg-verdePastel w-full mx-4 rounded-lg mb-6 shadow-[5px_5px_4px_rgba(0,0,0,0.25)]">
+          <div class="flex flex-col relative bg-verdePastel w-11/12 pt-4 gap-6 mx-4 rounded-lg mb-6 shadow-[5px_5px_4px_rgba(0,0,0,0.25)]">
             @if (!notificado) {
             <svg
               xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -125,11 +137,11 @@ import { renderStars, getStatusColorLotacao, getCapacityFromStatus } from '../..
               <polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/>
             </svg>
 
-            <div class="flex flex-col md:flex-row flex-grow p-4">
-              <div class="flex items-center justify-center w-full md:w-auto min-h-[150px]">
-                <img [src]="card.imagemURL" [alt]="card.nome" class="w-[200px] md:w-[300px] h-auto object-contain" />
+            <div class="flex flex-row flex-grow px-6">
+              <div class="flex flex-row items-center w-full justify-center min-h-[200px]">
+                <img [src]="card.imagemURL" [alt]="card.nome" class="w-[300px] h-auto object-contain" />
               </div>
-              <div class="flex flex-col text-verdeEscuro w-full justify-center text-justify pl-0 md:pl-4 gap-y-1 mt-4 md:mt-0">
+              <div class="flex flex-col text-verdeEscuro w-11/12 justify-center text-justify pl-4 gap-y-1">
                 <h1 class="text-base text-left font-bold">{{ card.nome }}</h1>
                 <div class="flex items-center">
                   @for (star of getEstrelas(card.nota); track $index) {
@@ -155,7 +167,7 @@ import { renderStars, getStatusColorLotacao, getCapacityFromStatus } from '../..
                 <p class="font-bold text-sm">Status: {{ card.status.split('_').join(' ') }}</p>
                 <div class="flex items-center">
                   @for (icon of getUserIcons(card.status); track $index) {
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" [attr.stroke]="icon.cor" stroke-width="2" [class.fill-current]="icon.preenchido">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" [attr.fill]="icon.preenchido ? icon.cor : 'none'" [attr.stroke]="icon.preenchido ? icon.cor : '#999999'" stroke-width="2">
                       <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
                     </svg>
                   }
@@ -180,6 +192,8 @@ import { renderStars, getStatusColorLotacao, getCapacityFromStatus } from '../..
   `,
 })
 export class HomeComponent implements OnDestroy {
+  @ViewChild('carouselTrack') carouselTrack!: ElementRef<HTMLElement>;
+
   navLinks: NavLink[] = [
     { id: 1, label: 'Registrar lotação', href: '/' },
     { id: 2, label: 'Ir para o mapa', href: '/mapa' },
@@ -197,21 +211,20 @@ export class HomeComponent implements OnDestroy {
     { titulo: 'Descubra unidades próximas', descricao: 'Utilize o mapa para encontrar os hospitais e clínicas mais próximos de você.', botao: 'IR PARA O MAPA', acao: () => this.router.navigate(['/mapa']), imagem: null, layout: 'default' },
   ];
 
-  slideAtual = 0;
-  private autoPlayInterval: any;
-
-  get paddingOffset(): number {
-    if (typeof document === 'undefined') return 0;
-    const vw = document.documentElement.clientWidth;
-    const cardW = Math.min(700, vw * 0.9);
-    return Math.max(0, (vw - cardW) / 2);
+  get displayedSlides() {
+    const first = this.slides[0];
+    const last = this.slides[this.slides.length - 1];
+    return [last, ...this.slides, first];
   }
+
+  private _slideAtual = 1;
+  disableAnimation = false;
+  private _wrapPending = false;
+  private autoPlayInterval: any;
 
   get carouselTransform(): string {
     const vw = typeof document !== 'undefined' ? document.documentElement.clientWidth : 1200;
-    const cardW = Math.min(700, vw * 0.9);
-    const gap = 16;
-    const offset = -this.slideAtual * (cardW + gap);
+    const offset = (vw - 700) / 2 - this._slideAtual * 780;
     return `translateX(${offset}px)`;
   }
 
@@ -236,6 +249,21 @@ export class HomeComponent implements OnDestroy {
     afterNextRender(() => {
       this.carregarUnidades();
       this.iniciarAutoPlay();
+
+      this.carouselTrack.nativeElement.addEventListener('transitionend', () => {
+        if (!this._wrapPending) return;
+        this._wrapPending = false;
+        this.disableAnimation = true;
+        if (this._slideAtual >= this.displayedSlides.length - 1) {
+          this._slideAtual = 1;
+        } else if (this._slideAtual <= 0) {
+          this._slideAtual = this.displayedSlides.length - 2;
+        }
+        this.cdr.detectChanges();
+        requestAnimationFrame(() => {
+          this.disableAnimation = false;
+        });
+      });
     });
   }
 
@@ -283,12 +311,18 @@ export class HomeComponent implements OnDestroy {
   }
 
   proximoSlide() {
-    this.slideAtual = (this.slideAtual + 1) % this.slides.length;
+    this._slideAtual++;
+    if (this._slideAtual >= this.displayedSlides.length - 1) {
+      this._wrapPending = true;
+    }
     this.reiniciarAutoPlay();
   }
 
   slideAnterior() {
-    this.slideAtual = (this.slideAtual - 1 + this.slides.length) % this.slides.length;
+    this._slideAtual--;
+    if (this._slideAtual <= 0) {
+      this._wrapPending = true;
+    }
     this.reiniciarAutoPlay();
   }
 
