@@ -47,7 +47,7 @@ import { Location } from '@angular/common';
       <p class="mb-4">Esta Política poderá ser atualizada periodicamente.</p>
 
       <p class="mb-4 font-semibold">10. Encarregado</p>
-      <p class="mb-4">Em caso de dúvidas, entre em contato: [email&#64;instituicao.br]</p>
+      <p class="mb-4">Em caso de dúvidas, entre em contato: alanaabreu1103@gmail.com</p>
     </div>
   `,
 })

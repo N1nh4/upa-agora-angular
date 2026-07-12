@@ -49,7 +49,7 @@ import { RouterLink } from '@angular/router';
       <p class="mb-4">Estes Termos de Uso podem ser atualizados periodicamente.</p>
 
       <p class="mb-4 font-semibold">8. Contato</p>
-      <p class="mb-4">Para dúvidas ou sugestões, entre em contato pelo email: [email&#64;instituicao.br]</p>
+      <p class="mb-4">Para dúvidas ou sugestões, entre em contato pelo email: alanaabreu1103@gmail.com</p>
     </div>
   `,
 })

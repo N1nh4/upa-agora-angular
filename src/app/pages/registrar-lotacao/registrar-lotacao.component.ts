@@ -251,10 +251,15 @@ import { getStatusColor, getStatusArray, getLocalUbsImage } from '../../utils/re
                 VOLTAR
               </button>
               <button
-                class="bg-white text-verdeEscuro rounded-2xl h-12 w-32 lg:w-48 font-bold cursor-pointer text-sm lg:text-base"
+                class="bg-white text-verdeEscuro rounded-2xl h-12 w-32 lg:w-48 font-bold cursor-pointer text-sm lg:text-base disabled:opacity-50 disabled:cursor-not-allowed"
+                [disabled]="enviando"
                 (click)="enviarAtualizacao()"
               >
-                ENVIAR
+                @if (enviando) {
+                  <div class="w-5 h-5 border-2 border-verdeEscuro border-t-transparent rounded-full animate-spin mx-auto"></div>
+                } @else {
+                  ENVIAR
+                }
               </button>
             </div>
           </div>
@@ -274,6 +279,7 @@ export class RegistrarLotacaoComponent implements OnInit {
 
   unidade: UnidadePaginaDTO | null = null;
   carregando = true;
+  enviando = false;
   hoveredIndex: number | null = null;
   selectedIndex: number | null = null;
   statusSelecionado = 'SEM_INFORMACAO';
@@ -326,6 +332,8 @@ export class RegistrarLotacaoComponent implements OnInit {
   }
 
   async enviarAtualizacao() {
+    if (this.enviando) return;
+
     const id = this.route.snapshot.paramMap.get('id');
     if (!id) {
       toast.error('ID da unidade inválido');
@@ -338,22 +346,19 @@ export class RegistrarLotacaoComponent implements OnInit {
       return;
     }
 
+    this.enviando = true;
     try {
-      const resposta = await this.unidadeService.registrarAtualizacaoCompleta(
+      await this.unidadeService.registrarAtualizacaoCompleta(
         this.statusSelecionado,
         this.usuarioService.usuarioAtual.usuarioId,
         idNum,
       );
-      console.log('Resposta do backend:', resposta);
-      if (resposta?.statusUnidadeAtualizado) {
-        this.unidade = this.unidade
-          ? { ...this.unidade, status: resposta.statusUnidadeAtualizado }
-          : null;
-      }
       toast.success('Atualização enviada com sucesso!');
+      this.router.navigate(['/']);
     } catch (error) {
       console.error('Erro ao enviar atualização:', error);
       toast.error('Erro ao enviar atualização.');
+      this.enviando = false;
     }
   }
 
