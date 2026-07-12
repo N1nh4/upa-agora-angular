@@ -76,6 +76,19 @@ export class UsuarioService {
     } catch {}
   }
 
+  async deletarConta(): Promise<any> {
+    const usuario = this.usuarioAtual;
+    if (!usuario?.usuarioId) throw new Error('Usuário não logado');
+
+    const response = await fetch(`${this.baseUrl}/usuario/${usuario.usuarioId}`, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+    });
+    if (!response.ok) throw new Error('Erro ao excluir conta');
+    this.logout();
+    return response.json();
+  }
+
   async criarUsuario(nome: string, email: string, senha: string): Promise<any> {
     const response = await fetch(`${this.baseUrl}/criar-conta`, {
       method: 'POST',

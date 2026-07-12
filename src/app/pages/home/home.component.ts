@@ -196,7 +196,7 @@ import { renderStars, getStatusColorLotacao, getCapacityFromStatus, getLocalUbsI
         >
           <option value="lotacao">Lotação</option>
           <option value="localizacao">Localização</option>
-          <option value="status">Avalie</option>
+          <option value="status">Avaliação</option>
         </select>
       </div>
 

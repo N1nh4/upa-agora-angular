@@ -12,7 +12,13 @@ import { environment } from '../../../environments/environment';
       <div class="fixed top-0 left-0 w-screen h-screen -z-10" style="background-color: #DAE5DD"></div>
       <app-header [navLinks]="navLinks" />
 
-      <div class="container mx-auto px-4 pt-20">
+      @if (carregando) {
+        <div class="w-full min-h-screen flex flex-col items-center justify-center p-8">
+          <div class="w-10 h-10 border-4 border-emerald-800 border-t-transparent rounded-full animate-spin"></div>
+          <p class="text-gray-600 mt-4">Carregando ranking...</p>
+        </div>
+      } @else {
+        <div class="container mx-auto px-4 pt-20">
         <div class="bg-white rounded-lg shadow-md p-4 md:p-6 max-w-[90%] md:max-w-[56%] mx-auto mb-20 flex justify-center items-end relative mt-6 min-h-[300px]">
           @if (topRanked[0]) {
             <div class="absolute top-4" style="left: 50%; transform: translateX(-50%)">
@@ -59,7 +65,8 @@ import { environment } from '../../../environments/environment';
             <div class="font-bold text-lg md:text-2xl mr-4 md:mr-9">{{ item.contribuicoes }}</div>
           </div>
         }
-      </div>
+        </div>
+      }
     </div>
   `,
 })
@@ -73,6 +80,7 @@ export class RankingComponent implements OnInit {
   ];
 
   rankingData: ClienteRankingDTO[] = [];
+  carregando = true;
 
   get topRanked(): ClienteRankingDTO[] {
     return this.rankingData.slice(0, 3);
@@ -90,6 +98,7 @@ export class RankingComponent implements OnInit {
   constructor(private clienteService: ClienteService, private cdr: ChangeDetectorRef) {}
 
   async ngOnInit() {
+    if (typeof window !== 'undefined') window.scrollTo(0, 0);
     try {
       const response = await fetch(`${environment.apiUrl}/ranking`);
       if (response.ok) {
@@ -98,6 +107,7 @@ export class RankingComponent implements OnInit {
     } catch (error) {
       console.error('Erro ao carregar ranking:', error);
     } finally {
+      this.carregando = false;
       this.cdr.detectChanges();
     }
   }

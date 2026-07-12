@@ -40,7 +40,7 @@ import { getStatusColorLotacao, getCapacityFromStatus, getLocalUbsImage } from '
               <h2 class="text-xl md:text-2xl font-bold mb-4">{{ unidade.nome }}</h2>
 
               <div class="flex items-center mb-4">
-                <span class="font-bold mr-2">Avaliação:</span>
+                <span class="font-bold mr-2">Avalie:</span>
                 @for (star of [1,2,3,4,5]; track star) {
                   <button
                     class="cursor-pointer p-0.5"
