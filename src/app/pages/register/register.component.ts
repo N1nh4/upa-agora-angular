@@ -95,7 +95,7 @@ export class RegisterComponent {
     }
 
     google.accounts.id.initialize({
-      client_id: 'SEU_GOOGLE_CLIENT_ID.apps.googleusercontent.com',
+      client_id: '76688248959-sueel3qm266c4gi1k60l8d0mo46j0lpk.apps.googleusercontent.com',
       callback: (response: any) => this.handleGoogleResponse(response),
     });
   }

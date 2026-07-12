@@ -16,7 +16,12 @@ import { getStatusColor, getStatusArray, getLocalUbsImage } from '../../utils/re
       <app-header [navLinks]="navLinks" />
       <app-barra-titulo titulo="REGISTRAR LOTAÇÃO" [mostrarVoltar]="true" (voltar)="cancelar()" />
 
-      @if (!unidade) {
+      @if (carregando) {
+        <div class="w-full min-h-screen flex flex-col items-center justify-center p-8">
+          <div class="w-10 h-10 border-4 border-verdeEscuro border-t-transparent rounded-full animate-spin"></div>
+          <p class="text-gray-600 mt-4">Carregando unidade...</p>
+        </div>
+      } @else if (!unidade) {
         <div class="w-full min-h-screen flex flex-col items-center justify-center p-8">
           <h1 class="text-2xl font-bold text-red-600">Erro: Unidade não encontrada</h1>
           <p class="text-gray-600">Verifique o ID na URL.</p>
@@ -24,17 +29,17 @@ import { getStatusColor, getStatusArray, getLocalUbsImage } from '../../utils/re
       } @else {
         <div class="flex flex-col w-full h-full flex-grow overflow-y-auto">
           <div class="flex flex-col lg:flex-row justify-between h-full">
-            <div class="flex h-full items-center justify-center">
+            <div class="flex w-full lg:w-auto items-center justify-center">
               <img
                 [src]="getLocalUbsImage(unidade.id)"
                 alt="Imagem da unidade"
-                class="w-full h-full object-cover max-h-96"
+                class="w-full h-48 lg:h-full object-cover max-h-64 lg:max-h-96"
               />
             </div>
 
-            <div class="flex flex-col justify-center py-8 gap-2 text-xl px-8">
-              <h1 class="text-verdeEscuro font-bold text-3xl mb-4">Informações da unidade</h1>
-              <h2 class="text-verdeEscuro font-bold text-2xl">{{ unidade.nome }}</h2>
+            <div class="flex flex-col justify-center py-4 lg:py-8 gap-2 text-base lg:text-xl px-4 lg:px-8">
+              <h1 class="text-verdeEscuro font-bold text-2xl lg:text-3xl mb-4">Informações da unidade</h1>
+              <h2 class="text-verdeEscuro font-bold text-xl lg:text-2xl">{{ unidade.nome }}</h2>
               <span class="flex items-center italic text-verdeEscuro">
                 <span>Ative as notificações dessa unidade</span>
                 <svg
@@ -54,7 +59,7 @@ import { getStatusColor, getStatusArray, getLocalUbsImage } from '../../utils/re
               <span class="flex items-center">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  class="mr-2"
+                  class="mr-2 flex-shrink-0"
                   width="24"
                   height="24"
                   viewBox="0 0 24 24"
@@ -65,12 +70,12 @@ import { getStatusColor, getStatusArray, getLocalUbsImage } from '../../utils/re
                   <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
                   <circle cx="12" cy="10" r="3" />
                 </svg>
-                Endereço: {{ unidade.endereco.bairro.nome }} - {{ unidade.endereco.rua }}
+                <span class="break-words">Endereço: {{ unidade.endereco.bairro.nome }} - {{ unidade.endereco.rua }}</span>
               </span>
               <span class="flex items-center">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  class="mr-2"
+                  class="mr-2 flex-shrink-0"
                   width="24"
                   height="24"
                   viewBox="0 0 24 24"
@@ -87,7 +92,7 @@ import { getStatusColor, getStatusArray, getLocalUbsImage } from '../../utils/re
               <span class="flex items-center font-bold">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  class="mr-2"
+                  class="mr-2 flex-shrink-0"
                   width="24"
                   height="24"
                   viewBox="0 0 24 24"
@@ -105,7 +110,7 @@ import { getStatusColor, getStatusArray, getLocalUbsImage } from '../../utils/re
               <span class="italic flex items-center">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  class="mr-2"
+                  class="mr-2 flex-shrink-0"
                   width="24"
                   height="24"
                   viewBox="0 0 24 24"
@@ -120,13 +125,13 @@ import { getStatusColor, getStatusArray, getLocalUbsImage } from '../../utils/re
               </span>
             </div>
 
-            <div class="flex justify-center items-center">
-              <div class="flex flex-col bg-verdePastel shadow-md rounded-2xl mr-10 m-4 max-h-80">
-                <span class="bg-[#0E6F4C] py-2 pl-4 text-white rounded-t-2xl font-bold"
+            <div class="flex justify-center items-center px-4 pb-4 lg:px-0 lg:pb-0">
+              <div class="flex flex-col bg-verdePastel shadow-md rounded-2xl w-full lg:w-auto lg:mr-10 m-0 lg:m-4 max-h-80">
+                <span class="bg-[#0E6F4C] py-2 pl-4 text-white rounded-t-2xl font-bold text-sm lg:text-base"
                   >Como avaliar o Status de lotação?</span
                 >
                 <div class="flex flex-1 justify-center items-center p-4">
-                  <ul class="flex flex-col gap-4 text-zinc-500 font-bold">
+                  <ul class="flex flex-col gap-3 lg:gap-4 text-zinc-500 font-bold text-xs lg:text-sm">
                     <li class="flex items-center gap-2">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -208,12 +213,12 @@ import { getStatusColor, getStatusArray, getLocalUbsImage } from '../../utils/re
             </div>
           </div>
 
-          <div class="bg-verdeEscuro mt-auto px-8 py-4 flex flex-col justify-between gap-8">
-            <span class="italic text-white text-2xl">
+          <div class="bg-verdeEscuro mt-auto px-4 lg:px-8 py-4 flex flex-col justify-between gap-6 lg:gap-8">
+            <span class="italic text-white text-lg lg:text-2xl">
               Confirme os dados da unidade e selecione o Status de lotação:
             </span>
 
-            <div class="flex gap-4 items-center justify-center">
+            <div class="flex flex-wrap gap-3 lg:gap-4 items-center justify-center">
               @for (status of statusArray; track status; let i = $index) {
                 <div
                   class="cursor-pointer flex flex-col items-center"
@@ -223,12 +228,13 @@ import { getStatusColor, getStatusArray, getLocalUbsImage } from '../../utils/re
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    width="64"
-                    height="64"
+                    width="48"
+                    height="48"
                     viewBox="0 0 24 24"
                     fill="none"
                     [attr.stroke]="getCorIcone(i)"
                     stroke-width="2"
+                    class="lg:w-16 lg:h-16"
                   >
                     <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
                     <circle cx="12" cy="7" r="4" />
@@ -237,15 +243,15 @@ import { getStatusColor, getStatusArray, getLocalUbsImage } from '../../utils/re
               }
             </div>
 
-            <div class="flex justify-center gap-12 pb-4">
+            <div class="flex justify-center gap-4 lg:gap-12 pb-4">
               <button
-                class="bg-white text-verdeEscuro rounded-2xl h-12 w-48 font-bold cursor-pointer"
+                class="bg-white text-verdeEscuro rounded-2xl h-12 w-32 lg:w-48 font-bold cursor-pointer text-sm lg:text-base"
                 (click)="cancelar()"
               >
                 VOLTAR
               </button>
               <button
-                class="bg-white text-verdeEscuro rounded-2xl h-12 w-48 font-bold cursor-pointer"
+                class="bg-white text-verdeEscuro rounded-2xl h-12 w-32 lg:w-48 font-bold cursor-pointer text-sm lg:text-base"
                 (click)="enviarAtualizacao()"
               >
                 ENVIAR
@@ -267,6 +273,7 @@ export class RegistrarLotacaoComponent implements OnInit {
   ];
 
   unidade: UnidadePaginaDTO | null = null;
+  carregando = true;
   hoveredIndex: number | null = null;
   selectedIndex: number | null = null;
   statusSelecionado = 'SEM_INFORMACAO';
@@ -300,6 +307,7 @@ export class RegistrarLotacaoComponent implements OnInit {
     } catch (err) {
       console.error('Erro ao carregar unidade:', err);
     } finally {
+      this.carregando = false;
       this.cdr.detectChanges();
     }
   }
