@@ -240,13 +240,59 @@ import { getStatusColorLotacao, getCapacityFromStatus, getLocalUbsImage } from '
                       <circle cx="12" cy="7" r="4" />
                     </svg>
                   }
-                  <div>
+                  <div class="flex-1">
                     <p class="font-bold text-base md:text-lg text-gray-900">
                       {{ comentario.clienteNome }}
                     </p>
-                    <p class="text-gray-800 mt-1 text-sm md:text-base">{{ comentario.texto }}</p>
-                    <p class="text-sm text-gray-500 mt-2">{{ comentario.data_hora }}</p>
+                    @if (comentarioEditandoId === comentario.id) {
+                      <textarea
+                        [value]="comentarioEditandoTexto"
+                        (input)="comentarioEditandoTexto = $any($event.target).value"
+                        class="w-full mt-1 p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-verdeClaro resize-y min-h-[40px] text-gray-700"
+                      ></textarea>
+                      <div class="flex gap-2 mt-2">
+                        <button
+                          class="px-3 py-1 text-sm bg-[#106A43] text-white rounded-md hover:bg-[#0c5033] cursor-pointer"
+                          (click)="salvarEdicao(comentario.id)"
+                        >
+                          Salvar
+                        </button>
+                        <button
+                          class="px-3 py-1 text-sm text-gray-700 hover:text-gray-900 rounded-md cursor-pointer"
+                          (click)="cancelarEdicao()"
+                        >
+                          Cancelar
+                        </button>
+                      </div>
+                    } @else {
+                      <p class="text-gray-800 mt-1 text-sm md:text-base">{{ comentario.texto }}</p>
+                      <p class="text-sm text-gray-500 mt-2">{{ comentario.data_hora }}</p>
+                    }
                   </div>
+                  @if (usuarioAtualId && comentario.clienteId === usuarioAtualId && comentarioEditandoId !== comentario.id) {
+                    <div class="flex gap-1 ml-2 flex-shrink-0">
+                      <button
+                        class="p-1 text-gray-400 hover:text-blue-600 cursor-pointer"
+                        title="Editar comentário"
+                        (click)="iniciarEdicao(comentario)"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                        </svg>
+                      </button>
+                      <button
+                        class="p-1 text-gray-400 hover:text-red-600 cursor-pointer"
+                        title="Excluir comentário"
+                        (click)="excluirComentario(comentario.id)"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <polyline points="3 6 5 6 21 6"/>
+                          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                        </svg>
+                      </button>
+                    </div>
+                  }
                 </div>
               }
             } @else {
@@ -274,6 +320,8 @@ export class UnidadeDetailComponent implements OnInit {
   usuarioFotoURL: string | null = null;
   hoveredStar = 0;
   notaUsuario = 0;
+  comentarioEditandoId: number | null = null;
+  comentarioEditandoTexto = '';
 
   constructor(
     private route: ActivatedRoute,
@@ -376,6 +424,73 @@ export class UnidadeDetailComponent implements OnInit {
 
   cancelarComentario() {
     this.novoComentarioTexto = '';
+  }
+
+  iniciarEdicao(comentario: any) {
+    this.comentarioEditandoId = comentario.id;
+    this.comentarioEditandoTexto = comentario.texto;
+  }
+
+  cancelarEdicao() {
+    this.comentarioEditandoId = null;
+    this.comentarioEditandoTexto = '';
+  }
+
+  async salvarEdicao(comentarioId: number) {
+    if (this.comentarioEditandoTexto.trim() === '') {
+      toast.error('O comentário não pode ficar vazio.');
+      return;
+    }
+
+    const usuario = this.usuarioService.usuarioAtual;
+    if (!usuario?.usuarioId) return;
+
+    const id = this.route.snapshot.paramMap.get('id');
+    if (!id) return;
+
+    try {
+      await this.unidadeService.editarComentario(
+        parseInt(id),
+        comentarioId,
+        usuario.usuarioId,
+        this.comentarioEditandoTexto.trim(),
+      );
+      this.comentarioEditandoId = null;
+      this.comentarioEditandoTexto = '';
+      this.unidade = await this.unidadeService.getUnidade(parseInt(id));
+      this.cdr.detectChanges();
+      toast.success('Comentário atualizado!');
+    } catch (error) {
+      console.error('Erro ao editar comentário:', error);
+      toast.error('Erro ao editar comentário.');
+    }
+  }
+
+  async excluirComentario(comentarioId: number) {
+    const usuario = this.usuarioService.usuarioAtual;
+    if (!usuario?.usuarioId) return;
+
+    const id = this.route.snapshot.paramMap.get('id');
+    if (!id) return;
+
+    try {
+      await this.unidadeService.excluirComentario(
+        parseInt(id),
+        comentarioId,
+        usuario.usuarioId,
+      );
+      this.unidade = await this.unidadeService.getUnidade(parseInt(id));
+      this.cdr.detectChanges();
+      toast.success('Comentário excluído!');
+    } catch (error) {
+      console.error('Erro ao excluir comentário:', error);
+      toast.error('Erro ao excluir comentário.');
+    }
+  }
+
+  get usuarioAtualId(): number | null {
+    const usuario = this.usuarioService.usuarioAtual;
+    return usuario?.usuarioId ?? null;
   }
 
   getLocalUbsImage(id: number): string {

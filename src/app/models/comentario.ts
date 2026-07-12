@@ -4,4 +4,5 @@ export interface Comentario {
   data_hora: string;
   clienteNome: string;
   clienteFotoURL: string;
+  clienteId: number;
 }

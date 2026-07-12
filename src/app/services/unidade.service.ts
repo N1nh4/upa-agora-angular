@@ -67,6 +67,26 @@ export class UnidadeService {
     return response.text();
   }
 
+  async editarComentario(unidadeId: number, comentarioId: number, clienteId: number, texto: string): Promise<any> {
+    const response = await fetch(`${this.baseUrl}/unidade/${unidadeId}/comentario/${comentarioId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ clienteId, texto }),
+    });
+    if (!response.ok) throw new Error('Erro ao editar comentário');
+    return response.text();
+  }
+
+  async excluirComentario(unidadeId: number, comentarioId: number, clienteId: number): Promise<any> {
+    const response = await fetch(`${this.baseUrl}/unidade/${unidadeId}/comentario/${comentarioId}`, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ clienteId }),
+    });
+    if (!response.ok) throw new Error('Erro ao excluir comentário');
+    return response.text();
+  }
+
   async avaliar(unidadeId: number, clienteId: number, nota: number): Promise<any> {
     const response = await fetch(`${this.baseUrl}/unidade/${unidadeId}/avaliacao`, {
       method: 'POST',
