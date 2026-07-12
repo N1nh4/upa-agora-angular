@@ -269,7 +269,7 @@ import { getStatusColorLotacao, getCapacityFromStatus, getLocalUbsImage } from '
                       <p class="text-sm text-gray-500 mt-2">{{ comentario.data_hora }}</p>
                     }
                   </div>
-                  @if (usuarioAtualId && comentario.clienteId != null && Number(comentario.clienteId) === Number(usuarioAtualId) && comentarioEditandoId !== comentario.id) {
+                  @if (usuarioAtualId && comentario.clienteId != null && comentario.clienteId == usuarioAtualId && comentarioEditandoId !== comentario.id) {
                     <div class="flex gap-1 ml-2 flex-shrink-0">
                       <button
                         class="p-1 text-gray-400 hover:text-blue-600 cursor-pointer"
