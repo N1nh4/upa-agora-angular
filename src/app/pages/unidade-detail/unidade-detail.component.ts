@@ -27,16 +27,16 @@ import { getStatusColorLotacao, getCapacityFromStatus, getLocalUbsImage } from '
           <p class="text-gray-600 mt-2">Verifique o ID da unidade na URL.</p>
         </div>
       } @else {
-        <div class="w-3/5 mx-auto p-8 text-verdeEscuro">
-          <div class="flex">
-            <div class="flex w-2/5 mr-8">
+        <div class="w-full md:w-3/5 mx-auto p-4 md:p-8 text-verdeEscuro">
+          <div class="flex flex-col md:flex-row">
+            <div class="flex w-full md:w-2/5 mb-4 md:mb-0 md:mr-8 justify-center md:justify-start">
               <img
                 [src]="getLocalUbsImage(unidade.id)"
                 [alt]="unidade.nome"
-                class="w-[400px] h-[300px] object-cover rounded-lg shadow-lg"
+                class="w-full max-w-[400px] h-[200px] md:h-[300px] object-cover rounded-lg shadow-lg"
               />
             </div>
-            <div class="flex flex-col justify-center text-lg w-3/5">
+            <div class="flex flex-col justify-center text-base md:text-lg w-full md:w-3/5">
               <h2 class="text-xl md:text-2xl font-bold mb-4">{{ unidade.nome }}</h2>
 
               <div class="flex items-center mb-4">
@@ -151,7 +151,7 @@ import { getStatusColorLotacao, getCapacityFromStatus, getLocalUbsImage } from '
           </div>
         </div>
 
-        <div class="mt-8 pt-8 border-t border-gray-200 w-4/5 mx-auto p-20">
+        <div class="mt-8 pt-8 border-t border-gray-200 w-full md:w-4/5 mx-auto p-4 md:p-20">
           <div class="flex items-center mb-4 gap-4">
             <h2 class="text-xl md:text-2xl font-bold text-verdeEscuro mb-4">Comentários</h2>
             <div class="flex">
@@ -269,7 +269,7 @@ import { getStatusColorLotacao, getCapacityFromStatus, getLocalUbsImage } from '
                       <p class="text-sm text-gray-500 mt-2">{{ comentario.data_hora }}</p>
                     }
                   </div>
-                  @if (usuarioAtualId && comentario.clienteId === usuarioAtualId && comentarioEditandoId !== comentario.id) {
+                  @if (usuarioAtualId && comentario.clienteId != null && Number(comentario.clienteId) === Number(usuarioAtualId) && comentarioEditandoId !== comentario.id) {
                     <div class="flex gap-1 ml-2 flex-shrink-0">
                       <button
                         class="p-1 text-gray-400 hover:text-blue-600 cursor-pointer"

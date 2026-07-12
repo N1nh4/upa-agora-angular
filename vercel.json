@@ -1,0 +1,11 @@
+{
+  "buildCommand": "ng build --configuration production",
+  "outputDirectory": "dist/upa-agora/browser",
+  "framework": "angular",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.csr.html"
+    }
+  ]
+}
