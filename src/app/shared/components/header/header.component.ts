@@ -3,6 +3,7 @@ import { Router, RouterLink } from '@angular/router';
 import { AsyncPipe } from '@angular/common';
 import { Observable, Subscription } from 'rxjs';
 import { UsuarioService } from '../../../services/usuario.service';
+import { toast } from 'ngx-sonner';
 
 export interface NavLink {
   id: number;
@@ -118,6 +119,7 @@ export class HeaderComponent implements OnChanges, OnDestroy {
   }
 
   logout() {
+    toast.success('Logout realizado!');
     this.usuarioService.logout();
     this.router.navigate(['/']);
   }

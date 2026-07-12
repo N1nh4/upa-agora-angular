@@ -30,27 +30,27 @@ import { renderStars, getStatusColorLotacao, getCapacityFromStatus, getLocalUbsI
           <div class="overflow-hidden">
             <div
               #carouselTrack
-              class="flex -ml-20"
+              class="flex -ml-4 md:-ml-20"
               [style.transform]="carouselTransform"
               [style.transition]="disableAnimation ? 'none' : 'transform 500ms ease-in-out'"
             >
               @for (slide of displayedSlides; track $index) {
                 @if (slide.layout === 'hero') {
-                  <div class="pb-4 min-w-0 shrink-0 grow-0 pl-20 basis-auto">
+                  <div class="pb-4 min-w-0 shrink-0 grow-0 pl-4 md:pl-20 basis-auto">
                     <div
-                      class="p-6 bg-white rounded-2xl shadow-sm w-[700px] h-[200px] flex flex-col justify-between relative"
+                      class="p-4 md:p-6 bg-white rounded-2xl shadow-sm w-[85vw] md:w-[700px] h-auto md:h-[200px] flex flex-col justify-between relative"
                       style="box-shadow: 5px 5px 4px rgba(0, 0, 0, 0.25)"
                     >
                       <div class="flex flex-row items-center justify-between">
-                        <div class="flex flex-col w-3/5">
-                          <h1 class="text-3xl font-semibold text-gray-800 mb-2">
+                        <div class="flex flex-col w-full md:w-3/5">
+                          <h1 class="text-xl md:text-3xl font-semibold text-gray-800 mb-2">
                             {{ slide.titulo }}
                           </h1>
-                          <p class="text-xl text-gray-600 mb-4">{{ slide.descricao }}</p>
+                          <p class="text-base md:text-xl text-gray-600 mb-4">{{ slide.descricao }}</p>
                         </div>
                       </div>
                       <button
-                        class="bg-[#106A43] hover:bg-[#0c5033] text-white text-lg rounded-lg w-4/12 py-2 absolute bottom-10 right-10"
+                        class="bg-[#106A43] hover:bg-[#0c5033] text-white text-base md:text-lg rounded-lg w-full md:w-4/12 py-2 mt-4 md:mt-0 md:absolute md:bottom-10 md:right-10"
                         (click)="slide.acao()"
                       >
                         {{ slide.botao }}
@@ -58,38 +58,38 @@ import { renderStars, getStatusColorLotacao, getCapacityFromStatus, getLocalUbsI
                     </div>
                   </div>
                 } @else if (slide.layout === 'ods') {
-                  <div class="pb-4 min-w-0 shrink-0 grow-0 pl-20 basis-auto overflow-visible">
+                  <div class="pb-4 min-w-0 shrink-0 grow-0 pl-4 md:pl-20 basis-auto overflow-visible">
                     <div
-                      class="p-10 bg-[#106A43] rounded-2xl shadow-sm text-white w-[700px] h-[200px] flex flex-row justify-between items-center overflow-visible"
+                      class="p-6 md:p-10 bg-[#106A43] rounded-2xl shadow-sm text-white w-[85vw] md:w-[700px] h-auto md:h-[200px] flex flex-col md:flex-row justify-between items-center overflow-visible gap-4 md:gap-0"
                       style="box-shadow: 5px 5px 4px rgba(0, 0, 0, 0.25)"
                     >
-                      <div class="flex flex-col w-3/5">
-                        <h1 class="text-3xl font-semibold mb-2">{{ slide.titulo }}</h1>
-                        <p class="text-xl mb-4">{{ slide.descricao }}</p>
+                      <div class="flex flex-col w-full md:w-3/5">
+                        <h1 class="text-xl md:text-3xl font-semibold mb-2">{{ slide.titulo }}</h1>
+                        <p class="text-base md:text-xl mb-4">{{ slide.descricao }}</p>
                       </div>
-                      <div class="flex justify-end w-1/2">
+                      <div class="flex justify-center md:justify-end w-full md:w-1/2">
                         <img
                           [src]="slide.imagem"
                           alt="ODS 3"
-                          class="w-auto h-[150px] object-contain"
+                          class="w-auto h-[80px] md:h-[150px] object-contain"
                         />
                       </div>
                     </div>
                   </div>
                 } @else {
-                  <div class="pb-4 min-w-0 shrink-0 grow-0 pl-20 basis-auto">
+                  <div class="pb-4 min-w-0 shrink-0 grow-0 pl-4 md:pl-20 basis-auto">
                     <div
-                      class="p-6 bg-white rounded-2xl shadow-sm w-[700px] h-[200px] flex flex-col justify-between"
+                      class="p-4 md:p-6 bg-white rounded-2xl shadow-sm w-[85vw] md:w-[700px] h-auto md:h-[200px] flex flex-col justify-between"
                       style="box-shadow: 5px 5px 4px rgba(0, 0, 0, 0.25)"
                     >
                       <div>
-                        <h1 class="text-2xl font-semibold text-gray-800 mb-2">
+                        <h1 class="text-lg md:text-2xl font-semibold text-gray-800 mb-2">
                           {{ slide.titulo }}
                         </h1>
-                        <p class="text-base text-gray-600 mb-4">{{ slide.descricao }}</p>
+                        <p class="text-sm md:text-base text-gray-600 mb-4">{{ slide.descricao }}</p>
                       </div>
                       <button
-                        class="bg-[#106A43] hover:bg-[#0c5033] text-white text-lg rounded-lg w-full py-2"
+                        class="bg-[#106A43] hover:bg-[#0c5033] text-white text-base md:text-lg rounded-lg w-full py-2"
                         (click)="slide.acao()"
                       >
                         {{ slide.botao }}
@@ -101,7 +101,7 @@ import { renderStars, getStatusColorLotacao, getCapacityFromStatus, getLocalUbsI
             </div>
           </div>
           <button
-            class="absolute size-8 rounded-full top-1/2 left-4 -translate-y-1/2 border bg-white hover:bg-gray-100 flex items-center justify-center shadow-xs"
+            class="absolute size-6 md:size-8 rounded-full top-1/2 left-2 md:left-4 -translate-y-1/2 border bg-white hover:bg-gray-100 flex items-center justify-center shadow-xs"
             (click)="slideAnterior()"
           >
             <svg
@@ -119,7 +119,7 @@ import { renderStars, getStatusColorLotacao, getCapacityFromStatus, getLocalUbsI
             </svg>
           </button>
           <button
-            class="absolute size-8 rounded-full top-1/2 right-4 -translate-y-1/2 border bg-white hover:bg-gray-100 flex items-center justify-center shadow-xs"
+            class="absolute size-6 md:size-8 rounded-full top-1/2 right-2 md:right-4 -translate-y-1/2 border bg-white hover:bg-gray-100 flex items-center justify-center shadow-xs"
             (click)="proximoSlide()"
           >
             <svg
@@ -196,7 +196,7 @@ import { renderStars, getStatusColorLotacao, getCapacityFromStatus, getLocalUbsI
         >
           <option value="lotacao">Lotação</option>
           <option value="localizacao">Localização</option>
-          <option value="status">Avaliação</option>
+          <option value="status">Avalie</option>
         </select>
       </div>
 
@@ -255,16 +255,16 @@ import { renderStars, getStatusColorLotacao, getCapacityFromStatus, getLocalUbsI
               <line x1="3" y1="21" x2="10" y2="14" />
             </svg>
 
-            <div class="flex flex-row flex-grow px-6">
-              <div class="flex flex-row items-center w-full justify-center min-h-[200px]">
+            <div class="flex flex-col md:flex-row flex-grow px-4 md:px-6">
+              <div class="flex flex-row items-center w-full md:w-auto justify-center min-h-[150px] md:min-h-[200px]">
                 <img
                   [src]="getLocalUbsImage(card.id)"
                   [alt]="card.nome"
-                  class="w-[300px] h-auto object-contain"
+                  class="w-full md:w-[300px] h-auto max-h-[180px] md:max-h-none object-contain"
                 />
               </div>
               <div
-                class="flex flex-col text-verdeEscuro w-11/12 justify-center text-justify pl-4 gap-y-1"
+                class="flex flex-col text-verdeEscuro w-full md:w-11/12 justify-center text-justify md:pl-4 gap-y-1 mt-2 md:mt-0"
               >
                 <h1 class="text-base text-left font-bold">{{ card.nome }}</h1>
                 <div class="flex items-center">
@@ -419,7 +419,9 @@ export class HomeComponent implements OnDestroy {
   private autoPlayInterval: any;
 
   get carouselTransform(): string {
-    const offset = (this._vw - 700) / 2 - this._currentIndex * 780;
+    const cardW = this._vw < 768 ? this._vw * 0.85 : 700;
+    const gap = this._vw < 768 ? cardW + 16 : 780;
+    const offset = (this._vw - cardW) / 2 - this._currentIndex * gap;
     return `translateX(${offset}px)`;
   }
 

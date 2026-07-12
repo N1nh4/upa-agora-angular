@@ -16,7 +16,12 @@ import { getStatusColorLotacao, getCapacityFromStatus, getLocalUbsImage } from '
       <app-header [navLinks]="navLinks" />
       <app-barra-titulo titulo="DETALHES DA UNIDADE" [mostrarVoltar]="true" (voltar)="voltar()" />
 
-      @if (!unidade) {
+      @if (carregando) {
+        <div class="w-full min-h-screen flex flex-col items-center justify-center p-8">
+          <div class="w-10 h-10 border-4 border-verdeEscuro border-t-transparent rounded-full animate-spin"></div>
+          <p class="text-gray-600 mt-4">Carregando unidade...</p>
+        </div>
+      } @else if (!unidade) {
         <div class="w-full min-h-screen flex flex-col items-center justify-center p-8">
           <h1 class="text-2xl font-bold text-red-600">Unidade não encontrada</h1>
           <p class="text-gray-600 mt-2">Verifique o ID da unidade na URL.</p>
@@ -263,6 +268,7 @@ export class UnidadeDetailComponent implements OnInit {
   ];
 
   unidade: UnidadePaginaDTO | null = null;
+  carregando = true;
   novoComentarioTexto = '';
   mostrarInfo = false;
   usuarioFotoURL: string | null = null;
@@ -293,6 +299,7 @@ export class UnidadeDetailComponent implements OnInit {
     } catch (err) {
       console.error('Erro ao carregar unidade:', err);
     } finally {
+      this.carregando = false;
       this.cdr.detectChanges();
     }
   }
