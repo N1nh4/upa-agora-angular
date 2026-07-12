@@ -259,7 +259,7 @@ export class UnidadeDetailComponent implements OnInit {
     { id: 2, label: 'Ir para o mapa', href: '/mapa' },
     { id: 3, label: 'Ranking', href: '/ranking' },
     { id: 4, label: 'Sobre nós', href: '/sobre-nos' },
-    { id: 5, label: 'Configurações', href: '/perfil' },
+    { id: 5, label: 'Perfil', href: '/perfil' },
   ];
 
   unidade: UnidadePaginaDTO | null = null;
@@ -304,7 +304,7 @@ export class UnidadeDetailComponent implements OnInit {
   async avaliar(nota: number) {
     const usuario = this.usuarioService.usuarioAtual;
     if (!usuario?.usuarioId) {
-      toast.error('Você precisa estar logado para avaliar.');
+      toast.info('Você precisa estar logado para avaliar.');
       return;
     }
 
@@ -326,7 +326,7 @@ export class UnidadeDetailComponent implements OnInit {
   irParaRegistrarLotacao() {
     const usuario = this.usuarioService.usuarioAtual;
     if (!usuario?.usuarioId) {
-      toast.error('Você precisa estar logado para registrar lotação.');
+      toast.info('Você precisa estar logado para registrar lotação.');
       return;
     }
 
@@ -344,7 +344,7 @@ export class UnidadeDetailComponent implements OnInit {
 
     const usuario = this.usuarioService.usuarioAtual;
     if (!usuario || !usuario.usuarioId) {
-      toast.error('Você precisa estar logado para comentar.');
+      toast.info('Você precisa estar logado para comentar.');
       return;
     }
 

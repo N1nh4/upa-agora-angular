@@ -21,7 +21,7 @@ export class MapaComponent {
     { id: 2, label: 'Ir para o mapa', href: '/mapa' },
     { id: 3, label: 'Ranking', href: '/ranking' },
     { id: 4, label: 'Sobre nós', href: '/sobre-nos' },
-    { id: 5, label: 'Configurações', href: '/perfil' },
+    { id: 5, label: 'Perfil', href: '/perfil' },
   ];
 
   upas: UnidadeMapaDTO[] = [];
@@ -53,7 +53,8 @@ export class MapaComponent {
 
   private async initMap() {
     console.log('[Mapa] initMap iniciou');
-    const L = await import('leaflet');
+    const leafletModule = await import('leaflet');
+    const L = (leafletModule as any).default || leafletModule;
     const el = this.mapContainer.nativeElement;
     if (!el) { console.log('[Mapa] erro: elemento nao encontrado'); return; }
 

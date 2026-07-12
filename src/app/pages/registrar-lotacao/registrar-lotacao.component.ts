@@ -263,7 +263,7 @@ export class RegistrarLotacaoComponent implements OnInit {
     { id: 2, label: 'Ir para o mapa', href: '/mapa' },
     { id: 3, label: 'Ranking', href: '/ranking' },
     { id: 4, label: 'Sobre nós', href: '/sobre-nos' },
-    { id: 5, label: 'Configurações', href: '/perfil' },
+    { id: 5, label: 'Perfil', href: '/perfil' },
   ];
 
   unidade: UnidadePaginaDTO | null = null;
@@ -284,7 +284,7 @@ export class RegistrarLotacaoComponent implements OnInit {
     if (typeof window !== 'undefined') window.scrollTo(0, 0);
     const usuario = this.usuarioService.usuarioAtual;
     if (!usuario?.usuarioId) {
-      toast.error('Você precisa estar logado para registrar lotação.');
+      toast.info('Você precisa estar logado para registrar lotação.');
       this.router.navigate(['/']);
       return;
     }

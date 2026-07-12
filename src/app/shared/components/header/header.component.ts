@@ -112,7 +112,7 @@ export class HeaderComponent implements OnChanges, OnDestroy {
   private updateVisibleLinks() {
     const logged = this.usuarioService.usuarioAtual?.usuarioId;
     this.visibleNavLinks = this.navLinks.filter(link => {
-      if (link.label === 'Configurações' && !logged) return false;
+      if (link.label === 'Perfil' && !logged) return false;
       return true;
     });
   }
