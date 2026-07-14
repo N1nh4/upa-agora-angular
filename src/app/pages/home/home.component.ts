@@ -207,7 +207,7 @@ import { renderStars, getStatusColorLotacao, getCapacityFromStatus, getLocalUbsI
           <div
             class="flex flex-col relative bg-verdePastel w-11/12 pt-4 gap-6 mx-4 rounded-lg mb-6 shadow-[5px_5px_4px_rgba(0,0,0,0.25)]"
           >
-            @if (!notificado) {
+            <!-- @if (!notificado) {
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="18"
@@ -237,7 +237,7 @@ import { renderStars, getStatusColorLotacao, getCapacityFromStatus, getLocalUbsI
                 <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
                 <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
               </svg>
-            }
+            } -->
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="18"
