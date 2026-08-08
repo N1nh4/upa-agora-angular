@@ -14,6 +14,7 @@ import { UnidadeService } from '../../services/unidade.service';
 import { UsuarioService } from '../../services/usuario.service';
 import { UnidadeSaudeDTO } from '../../models/unidadesdto';
 import { renderStars, getStatusColorLotacao, getCapacityFromStatus, getLocalUbsImage } from '../../utils/rendering';
+import { toast } from 'ngx-sonner';
 
 @Component({
   selector: 'app-home',
@@ -207,7 +208,7 @@ import { renderStars, getStatusColorLotacao, getCapacityFromStatus, getLocalUbsI
           <div
             class="flex flex-col relative bg-verdePastel w-11/12 pt-4 gap-6 mx-4 rounded-lg mb-6 shadow-[5px_5px_4px_rgba(0,0,0,0.25)]"
           >
-            <!-- @if (!notificado) {
+            @if (!estaNotificado(card.id)) {
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="18"
@@ -237,7 +238,7 @@ import { renderStars, getStatusColorLotacao, getCapacityFromStatus, getLocalUbsI
                 <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
                 <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
               </svg>
-            } -->
+            }
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="18"
@@ -428,7 +429,7 @@ export class HomeComponent implements OnDestroy {
   unidades: UnidadeSaudeDTO[] = [];
   searchTerm = '';
   carregando = false;
-  notificado = false;
+  notificados = new Set<number>();
   isSearchBarSticky = false;
   ordenarPor = 'lotacao';
   userLat: number | null = null;
@@ -493,6 +494,7 @@ export class HomeComponent implements OnDestroy {
     afterNextRender(() => {
       this._vw = document.documentElement.clientWidth;
       this.carregarUnidades();
+      this.carregarNotificacoes();
       this.iniciarAutoPlay();
       this.obterLocalizacao();
 
@@ -614,9 +616,50 @@ export class HomeComponent implements OnDestroy {
     this.router.navigate(['/unidade', id, 'registrar-lotacao']);
   }
 
-  notificar(card: UnidadeSaudeDTO) {
+  estaNotificado(id: number): boolean {
+    return this.notificados.has(id);
+  }
+
+  async notificar(card: UnidadeSaudeDTO) {
     const email = this.usuarioService.usuarioAtual?.email;
-    this.notificado = !this.notificado;
+    if (!email) {
+      toast.info('Você precisa estar logado para ativar notificações.');
+      return;
+    }
+
+    if (this.notificados.has(card.id)) {
+      try {
+        await this.unidadeService.desativarNotificacao(email, card.id);
+        this.notificados.delete(card.id);
+        this.cdr.detectChanges();
+        toast.success('Notificação desativada.');
+      } catch (error) {
+        console.error('Erro ao desativar notificação:', error);
+        toast.error('Erro ao desativar notificação.');
+      }
+    } else {
+      try {
+        await this.unidadeService.notificarUnidade(email, card.id);
+        this.notificados.add(card.id);
+        this.cdr.detectChanges();
+        toast.success('Notificação ativada. Você será avisado quando o status mudar.');
+      } catch (error) {
+        console.error('Erro ao ativar notificação:', error);
+        toast.error('Erro ao ativar notificação.');
+      }
+    }
+  }
+
+  private async carregarNotificacoes() {
+    const email = this.usuarioService.usuarioAtual?.email;
+    if (!email) return;
+    try {
+      const ids = await this.unidadeService.listarNotificacoes(email);
+      this.notificados = new Set(ids);
+      this.cdr.detectChanges();
+    } catch (error) {
+      console.error('Erro ao carregar notificações:', error);
+    }
   }
 
   getEstrelas(nota: number): string[] {

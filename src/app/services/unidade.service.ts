@@ -51,9 +51,27 @@ export class UnidadeService {
     const response = await fetch(`${this.baseUrl}/salvar-email-notificacao`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(email),
+      body: JSON.stringify({ email, idUnidade: id }),
     });
-    if (!response.ok) throw new Error('Erro ao notificar');
+    if (!response.ok) throw new Error('Erro ao ativar notificação');
+    return response.json();
+  }
+
+  async desativarNotificacao(email: string, id: number): Promise<any> {
+    const response = await fetch(`${this.baseUrl}/salvar-email-notificacao`, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, idUnidade: id }),
+    });
+    if (!response.ok) throw new Error('Erro ao desativar notificação');
+    return response.json();
+  }
+
+  async listarNotificacoes(email: string): Promise<number[]> {
+    const response = await fetch(
+      `${this.baseUrl}/salvar-email-notificacao?email=${encodeURIComponent(email)}`,
+    );
+    if (!response.ok) throw new Error('Erro ao buscar notificações');
     return response.json();
   }
 

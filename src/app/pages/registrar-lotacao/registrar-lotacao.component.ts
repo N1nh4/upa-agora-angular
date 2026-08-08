@@ -40,21 +40,40 @@ import { getStatusColor, getStatusArray, getLocalUbsImage } from '../../utils/re
             <div class="flex flex-col justify-center py-4 lg:py-8 gap-2 text-base lg:text-xl px-4 lg:px-8">
               <h1 class="text-verdeEscuro font-bold text-2xl lg:text-3xl mb-4">Informações da unidade</h1>
               <h2 class="text-verdeEscuro font-bold text-xl lg:text-2xl">{{ unidade.nome }}</h2>
-              <span class="flex items-center italic text-verdeEscuro">
-                <span>Ative as notificações dessa unidade</span>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="ml-2"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                >
-                  <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
-                  <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
-                </svg>
+              <span
+                class="flex items-center italic text-verdeEscuro cursor-pointer select-none"
+                (click)="notificar()"
+              >
+                <span>{{ notificado ? 'Notificações ativadas' : 'Ative as notificações dessa unidade' }}</span>
+                @if (notificado) {
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="ml-2"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
+                    <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
+                  </svg>
+                } @else {
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="ml-2"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
+                    <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
+                  </svg>
+                }
               </span>
               <span class="flex items-center">
                 <svg
@@ -284,6 +303,7 @@ export class RegistrarLotacaoComponent implements OnInit {
   selectedIndex: number | null = null;
   statusSelecionado = 'SEM_INFORMACAO';
   statusArray = getStatusArray();
+  notificado = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -310,11 +330,45 @@ export class RegistrarLotacaoComponent implements OnInit {
   async carregarUnidade(id: number) {
     try {
       this.unidade = await this.unidadeService.getUnidade(id);
+      const email = this.usuarioService.usuarioAtual?.email;
+      if (email) {
+        const inscritas = await this.unidadeService.listarNotificacoes(email);
+        this.notificado = inscritas.includes(id);
+      }
     } catch (err) {
       console.error('Erro ao carregar unidade:', err);
     } finally {
       this.carregando = false;
       this.cdr.detectChanges();
+    }
+  }
+
+  async notificar() {
+    const email = this.usuarioService.usuarioAtual?.email;
+    if (!email) {
+      toast.info('Você precisa estar logado para ativar notificações.');
+      return;
+    }
+    if (!this.unidade) return;
+
+    if (this.notificado) {
+      try {
+        await this.unidadeService.desativarNotificacao(email, this.unidade.id);
+        this.notificado = false;
+        toast.success('Notificação desativada.');
+      } catch (error) {
+        console.error('Erro ao desativar notificação:', error);
+        toast.error('Erro ao desativar notificação.');
+      }
+    } else {
+      try {
+        await this.unidadeService.notificarUnidade(email, this.unidade.id);
+        this.notificado = true;
+        toast.success('Notificação ativada. Você será avisado quando o status mudar.');
+      } catch (error) {
+        console.error('Erro ao ativar notificação:', error);
+        toast.error('Erro ao ativar notificação.');
+      }
     }
   }
 
