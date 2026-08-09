@@ -58,11 +58,10 @@ export class UnidadeService {
   }
 
   async desativarNotificacao(email: string, id: number): Promise<any> {
-    const response = await fetch(`${this.baseUrl}/salvar-email-notificacao`, {
-      method: 'DELETE',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, idUnidade: id }),
-    });
+    const response = await fetch(
+      `${this.baseUrl}/salvar-email-notificacao?email=${encodeURIComponent(email)}&idUnidade=${id}`,
+      { method: 'DELETE' },
+    );
     if (!response.ok) throw new Error('Erro ao desativar notificação');
     return response.json();
   }
