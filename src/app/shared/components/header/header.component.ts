@@ -21,7 +21,7 @@ export interface NavLink {
     >
       <div class="h-full flex items-center px-4 md:px-10 justify-between">
         <div class="flex items-center">
-          <a routerLink="/" class="text-2xl font-bold text-white">UpaAgora</a>
+          <a routerLink="/" class="text-2xl font-bold text-white">Saúde Agora</a>
         </div>
         <nav class="hidden md:flex items-center space-x-8 text-xl">
           @for (link of visibleNavLinks; track link.id) {
