@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://upa-agora.onrender.com'
+  apiUrl: 'https://lloyd-skirts-sacred-ratio.trycloudflare.com'
 };
